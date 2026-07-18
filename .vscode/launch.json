@@ -1,0 +1,121 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "DeScout",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_standard.dart",
+            "flutterMode": "debug",
+            "toolArgs": [
+                // "--dart-define-from-file=.env"
+                "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
+                "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
+                "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+            ]
+        },
+        // {
+        //     "name": "DeScout (profile mode)",
+        //     "request": "launch",
+        //     "type": "dart",
+        //     "flutterMode": "profile",
+        //     "program": "lib/main.dart",
+        //     "toolArgs": [
+        //         "--dart-define-from-file=.env"
+        //     ]
+        // },
+        {
+            "name": "DeScout (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "program": "lib/main_standard.dart",
+            "toolArgs": [
+                "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
+                "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
+                "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+            ]
+        },
+        {
+            "name": "Build APK — Production",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_standard.dart",
+            "cwd": "${workspaceFolder}",
+            "noDebug": true,
+            "args": [
+                "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
+                "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
+                "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+            ],
+            "toolArgs": [
+                "build",
+                "apk",
+                "--release"
+            ]
+        },
+        {
+            "name": "DeScout F-Droid",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_fdroid.dart",
+            "flutterMode": "debug",
+            "toolArgs": [
+                "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
+                "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
+                "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+            ]
+        },
+        {
+            "name": "Build F-Droid Prod APK",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_fdroid.dart",
+            "cwd": "${workspaceFolder}",
+            "noDebug": true,
+            "args": [
+                "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
+                "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
+                "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+            ],
+            "toolArgs": [
+                "build",
+                "apk",
+                "--release"
+            ]
+        },
+        {
+            "name": "DeScout Huawei",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_huawei.dart",
+            "flutterMode": "debug",
+            "toolArgs": [
+                "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
+                "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
+                "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+            ]
+        },
+        {
+            "name": "Build Huawei Prod APK",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_huawei.dart",
+            "cwd": "${workspaceFolder}",
+            "noDebug": true,
+            "args": [
+                "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
+                "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
+                "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+            ],
+            "toolArgs": [
+                "build",
+                "apk",
+                "--release"
+            ]
+        },
+    ]
+}

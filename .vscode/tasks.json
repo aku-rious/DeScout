@@ -1,0 +1,43 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Release APK (with .env)",
+            "type": "shell",
+            "command": "flutter build apk --release --dart-define-from-file=.env",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Shorebird Release (with .env)",
+            "type": "shell",
+            "command": "shorebird release android --artifact apk --dart-define-from-file=.env --no-confirm",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build APK — Production",
+            "type": "shell",
+            "command": "flutter",
+            "args": [
+                "build",
+                "apk",
+                "--release",
+                "-t",
+                "lib/main_standard.dart",
+                "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
+                "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
+                "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "focus": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

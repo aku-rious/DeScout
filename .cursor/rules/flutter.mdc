@@ -41,6 +41,9 @@ lib/
         presentation/
           review_queue_screen.dart
           providers/       # review_queue_provider.dart
+      settings/
+        presentation/
+          settings_screen.dart
       submit/
         presentation/
           submit_programme_screen.dart
@@ -52,12 +55,14 @@ lib/
         huawei_notification_service.dart
       router/
         app_router.dart                         # all routes here
-        app_routes.dart                         # route name constants
+        routes.dart                             # Routes path constants
       supabase/
         supabase_init.dart                      # Supabase.initialize()
+        supabase_client.dart                    # @riverpod SupabaseClient
         database_types.dart                     # generated: supabase gen types dart
+        table_names.dart                        # Tables + Cols query constants
       theme/
-        app_theme.dart                          # MaterialTheme class
+        app_theme.dart                          # DeScoutLightTheme / DeScoutDarkTheme
       utils/
         date_utils.dart
         constants.dart
@@ -74,7 +79,7 @@ lib/
 
 ## go_router rules
 - All routes defined in `lib/src/core/router/app_router.dart`. No `Navigator.push` anywhere.
-- Route name constants in `AppRoutes` class in `app_routes.dart`.
+- Route path constants in `Routes` class in `routes.dart`.
 - Auth guard in router's `redirect` callback — never in a screen's `initState` or `build`.
 - Use `context.go()` for replacing stack, `context.push()` for pushing. Never `Navigator.*`.
 
@@ -86,7 +91,8 @@ abstract class NotificationService {
   Future<void> scheduleDeadlineReminder({
     required String programmeId,
     required String programmeName,
-    required DateTime deadline,
+    required DateTime closesAt,
+    required int daysBefore,
   });
   Future<void> cancel(String programmeId);
 }
@@ -94,9 +100,11 @@ abstract class NotificationService {
 Each main_*.dart overrides `notificationServiceProvider` via Riverpod's `ProviderScope` overrides.
 
 ## Error handling
-- Catch `PostgrestException` in the repository layer; throw domain exceptions.
-- Never `try/catch` in a widget or provider build method.
-- Sentry captures unhandled exceptions — wired in `main_*.dart` via `SentryFlutter.init`.
+- Catch errors in repositories via [ErrorReporter.guard] — never in widgets or providers.
+- Throw [DeScoutException] with a safe `userMessage`; log full detail via Talker + Sentry.
+- Map raw exceptions with [ErrorMapper]; never show URLs, stack traces, or API text in UI.
+- Use [AsyncErrorView] for async error states; [ErrorMapper.userMessage] for snackbars.
+- Talker overlay: enabled in debug builds; admins can open TalkerScreen from Settings in prod.
 
 ## Code style
 - `const` constructors everywhere possible.

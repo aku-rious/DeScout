@@ -8,7 +8,7 @@ alwaysApply: true
 ## AGPL-3.0 licence header
 Every new Dart file must begin with:
 ```dart
-// Copyright (C) 2026 Detective
+// Copyright (C) 2026 Polymath
 // SPDX-License-Identifier: AGPL-3.0-or-later
 ```
 One blank line after the header before `import` statements.
@@ -60,7 +60,16 @@ Format: `// TODO(#issue): description` — never bare `// TODO`.
 If no issue exists yet, create one first.
 
 ## No magic strings for Supabase table/column names
-Define constants:
+
+Use **both** type-safety layers:
+
+| File | Purpose |
+|------|---------|
+| `table_names.dart` | `Tables` / `Cols` constants for `.from()` / `.eq()` query strings |
+| `database_types.dart` | Generated row shapes and enums (`supabase gen types dart`) |
+
+Never hardcode table or column names as raw strings in repositories.
+
 ```dart
 // lib/src/core/supabase/table_names.dart
 abstract class Tables {

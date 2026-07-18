@@ -22,6 +22,7 @@ DeScout/
 │   └── PRD.md                   # full Product Requirements Document
 ├── ios/                         # CodeMagic builds iOS from here
 ├── lib/
+│   ├── theme.dart               # Material Theme Builder output (do not edit)
 │   ├── main_standard.dart       # entry: injects OneSignalNotificationService
 │   ├── main_fdroid.dart         # entry: injects UnifiedPushNotificationService
 │   ├── main_huawei.dart         # entry: injects HuaweiNotificationService
@@ -62,6 +63,9 @@ DeScout/
 │       │   │   └── presentation/
 │       │   │       ├── review_queue_screen.dart
 │       │   │       └── providers/review_queue_provider.dart
+│       │   ├── settings/
+│       │   │   └── presentation/
+│       │   │       └── settings_screen.dart
 │       │   └── submit/
 │       │       └── presentation/
 │       │           └── submit_programme_screen.dart
@@ -73,13 +77,14 @@ DeScout/
 │           │   └── huawei_notification_service.dart
 │           ├── router/
 │           │   ├── app_router.dart                         # GoRouter instance
-│           │   └── app_routes.dart                         # route name constants
+│           │   └── routes.dart                             # Routes path constants
 │           ├── supabase/
 │           │   ├── supabase_init.dart                      # Supabase.initialize()
+│           │   ├── supabase_client.dart                    # @riverpod SupabaseClient
 │           │   ├── database_types.dart                     # generated types
 │           │   └── table_names.dart                        # Tables + Cols constants
 │           ├── theme/
-│           │   └── app_theme.dart                          # MaterialTheme class
+│           │   └── app_theme.dart                          # DeScoutLightTheme/DarkTheme
 │           └── utils/
 │               ├── date_utils.dart
 │               ├── deadline_utils.dart                     # DeadlineState classifier
@@ -133,15 +138,18 @@ Defined in `lib/src/core/router/app_router.dart`.
 
 | Route name             | Path                      | Screen                        | Auth required | Admin required |
 |------------------------|---------------------------|-------------------------------|---------------|----------------|
-| `AppRoutes.home`       | `/`                       | ProgrammesListScreen          | No            | No             |
-| `AppRoutes.detail`     | `/programmes/:id`         | ProgrammeDetailScreen         | No            | No             |
-| `AppRoutes.saved`      | `/saved`                  | SavedScreen                   | Yes           | No             |
-| `AppRoutes.login`      | `/auth/login`             | LoginScreen                   | No            | No             |
-| `AppRoutes.register`   | `/auth/register`          | RegisterScreen                | No            | No             |
-| `AppRoutes.submit`     | `/submit`                 | SubmitProgrammeScreen         | Yes (v0.3)    | No             |
-| `AppRoutes.adminQueue` | `/admin/review-queue`     | ReviewQueueScreen             | Yes           | Yes            |
+| `Routes.programmes`    | `/programmes`             | ProgrammesListScreen          | No            | No             |
+| `Routes.programmeDetail` | `/programmes/:id`       | ProgrammeDetailScreen         | No            | No             |
+| `Routes.saved`         | `/saved`                  | SavedScreen                   | Yes           | No             |
+| `Routes.settings`      | `/settings`               | SettingsScreen                | Yes           | No             |
+| `Routes.login`         | `/auth/login`             | LoginScreen                   | No            | No             |
+| `Routes.register`      | `/auth/register`          | RegisterScreen                | No            | No             |
+| `Routes.submit`        | `/submit`                 | SubmitProgrammeScreen         | Yes (v0.3)    | No             |
+| `Routes.adminReview`   | `/admin/review`           | ReviewQueueScreen             | Yes           | Yes            |
 
-**Bottom navigation:** Home (`/`), Saved (`/saved`), Submit (`/submit`)
+**Root redirect:** `/` → `/programmes`
+
+**Bottom navigation (planned):** Programmes (`/programmes`), Saved (`/saved`), Submit (`/submit`)
 
 ---
 
