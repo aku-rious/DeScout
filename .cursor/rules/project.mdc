@@ -1,0 +1,52 @@
+---
+description: DeScout project context — what the app is, stack, features, constraints. Read before every response.
+alwaysApply: true
+---
+
+# DeScout — Hackathon & Programme Tracker
+
+## What it is
+A Flutter mobile app that aggregates remote, paid, Nigeria-eligible hackathons and open-source
+fellowships (GSoC, Outreachy, LFX, Hyperledger, DoraHacks, etc.) into a single filtered,
+notifiable directory. Exposes programme data as a public AGPL-licensed JSON/REST feed.
+
+## Who it's for
+Primary: Nigerian developers (18–35) hunting remote paid opportunities.
+Cold-start community: TechCabal Slack, Forloop, DevCareer.
+
+## Stack
+- Flutter + Riverpod (state) + go_router (navigation)
+- Supabase (Postgres + Auth + auto-REST API)
+- Push: OneSignal (standard), UnifiedPush/ntfy (fdroid), huawei_push (huawei)
+- Sentry (errors), Shorebird OTA (standard flavor only)
+- GitHub Actions (CI/CD + ingestion cron), CodeMagic (iOS builds)
+
+## Distribution — NOT Google Play
+| Flavor     | Store / channel             | Push          | OTA        |
+|------------|-----------------------------|---------------|------------|
+| `standard` | APKPure, Uptodown           | OneSignal     | Shorebird  |
+| `fdroid`   | F-Droid                     | UnifiedPush   | None       |
+| `huawei`   | Huawei AppGallery           | huawei_push   | TBD        |
+
+## Release plan
+- **v0.1**: Browse + filter, Supabase auth, ~25 seed entries from internships.txt
+- **v0.2**: Save/track, push notifications, iOS, F-Droid + Huawei APKs
+- **v0.3**: Automated ingestion (Devpost RSS, DoraHacks API, MLH iCal, Playwright), admin review queue, in-app submission form
+- **v0.4**: Public API docs, static JSON feed, web app (Cloudflare Pages), user_tags personalisation
+
+## Hard constraints — never violate
+1. Licence is AGPL-3.0. Every new Dart file gets the AGPL header (see conventions.mdc).
+2. All `programmes` reads in the app MUST include `.eq('reviewed', true)`. Never show unreviewed entries.
+3. Supabase service role key NEVER appears in Flutter code — cron scripts only.
+4. All ThemeData decisions live in `lib/src/core/theme/app_theme.dart`. No inline ThemeData in widgets.
+5. No business logic in `build()` methods. Providers own all state and async calls.
+
+## Schema quick-reference
+Tables: `programmes`, `tags`, `programme_tags`, `users`, `saved_programmes`
+Full schema: `SCHEMA.md`
+
+## Open decisions (do not assume)
+- Data licence for programme entries: CC0 vs ODbL (before v0.4)
+- Shorebird on huawei flavor: unconfirmed
+- `stipend_ngn_approx` auto-calc: deferred to v0.3
+- `users.push_flavor` column: decide before v0.2 notification work

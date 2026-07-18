@@ -1,0 +1,79 @@
+---
+description: Project-wide conventions — AGPL headers, commits, naming, pubspec rules. Always apply.
+alwaysApply: true
+---
+
+# Project Conventions
+
+## AGPL-3.0 licence header
+Every new Dart file must begin with:
+```dart
+// Copyright (C) 2026 Detective
+// SPDX-License-Identifier: AGPL-3.0-or-later
+```
+One blank line after the header before `import` statements.
+
+## Commit message format
+```
+type(scope): short description in present tense
+
+Optional body: what and why, not how. Wrap at 72 chars.
+```
+Types: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `ci`, `perf`
+Scope: feature area — `programmes`, `auth`, `saved`, `notifications`, `admin`, `ingestion`, `theme`, `router`, `deps`
+
+Examples:
+```
+feat(programmes): add filter by stipend and remote flag
+fix(auth): handle expired Supabase session on app resume
+ci(ingestion): add Devpost RSS cron workflow
+chore(deps): bump supabase_flutter to 2.8.0
+docs(schema): add push_flavor column to users table
+```
+
+## Branch naming
+`feature/<short-description>`
+`fix/<short-description>`
+`chore/<short-description>`
+`ci/<short-description>`
+
+## Dart naming
+| Thing             | Convention     | Example                      |
+|-------------------|----------------|------------------------------|
+| Files             | `snake_case`   | `programme_card.dart`        |
+| Classes/Enums     | `PascalCase`   | `ProgrammeType`              |
+| Variables/methods | `camelCase`    | `fetchOpenProgrammes()`      |
+| Constants         | `camelCase`    | `defaultNotificationDays`    |
+| Private members   | `_camelCase`   | `_repository`                |
+| Enum values       | `camelCase`    | `ProgrammeType.fellowship`   |
+
+## pubspec.yaml
+- Dependencies alphabetically sorted within each section.
+- Caret ranges (`^x.y.z`) only — no exact pins, no `any`.
+- Comment non-obvious packages:
+  ```yaml
+  riverpod_annotation: ^2.0.0  # required for @riverpod codegen
+  ```
+
+## TODO comments
+Format: `// TODO(#issue): description` — never bare `// TODO`.
+If no issue exists yet, create one first.
+
+## No magic strings for Supabase table/column names
+Define constants:
+```dart
+// lib/src/core/supabase/table_names.dart
+abstract class Tables {
+  static const programmes     = 'programmes';
+  static const tags           = 'tags';
+  static const programmeTags  = 'programme_tags';
+  static const users          = 'users';
+  static const savedProgrammes = 'saved_programmes';
+}
+abstract class Cols {
+  static const reviewed       = 'reviewed';
+  static const closesAt       = 'closes_at';
+  static const nigeriaEligible = 'nigeria_eligible';
+  // ... add as needed
+}
+```

@@ -1,0 +1,59 @@
+---
+alwaysApply: false
+---
+# Theme & Design
+
+## Single source of truth
+`lib/src/core/theme/app_theme.dart` — the `MaterialTheme` class generated from Material Theme Builder
+(seed `#1B5E20`, deep green). This file contains all six schemes: light, dark, lightMediumContrast,
+lightHighContrast, darkMediumContrast, darkHighContrast.
+
+**Never** pass inline `ThemeData`, `ColorScheme`, or `TextStyle` in widgets.
+Always read from `Theme.of(context).colorScheme` and `Theme.of(context).textTheme`.
+
+## MaterialApp.router setup in app.dart
+```dart
+MaterialApp.router(
+  theme: MaterialTheme(Theme.of(context).textTheme).light(),
+  darkTheme: MaterialTheme(Theme.of(context).textTheme).dark(),
+  themeMode: ThemeMode.system,
+  routerConfig: appRouter,
+)
+```
+
+## Deadline urgency colour convention
+Map `closes_at` proximity to M3 semantic colours — use these, nowhere else:
+| State                       | Background                       | Foreground                      |
+|-----------------------------|----------------------------------|---------------------------------|
+| Closing ≤ 3 days            | `colorScheme.errorContainer`     | `colorScheme.onErrorContainer`  |
+| Closing 4–7 days            | `colorScheme.tertiaryContainer`  | `colorScheme.onTertiaryContainer` |
+| Open > 7 days               | `colorScheme.primaryContainer`   | `colorScheme.onPrimaryContainer`|
+| Upcoming (not yet open)     | `colorScheme.secondaryContainer` | `colorScheme.onSecondaryContainer` |
+| Closed                      | `colorScheme.surfaceContainerHighest` | `colorScheme.outline`      |
+
+Helper — put this in `lib/src/core/utils/deadline_utils.dart`, not in widgets:
+```dart
+DeadlineState classifyDeadline(DateTime? closesAt) { ... }
+```
+
+## Component choices (use these, not custom alternatives)
+- **Programme list cards**: `Card` — elevation 0, `color: colorScheme.surfaceContainerLow`, `borderRadius: 12`
+- **Filter chips**: `FilterChip` — `side: BorderSide.none`, `selectedColor: colorScheme.primaryContainer`
+- **Bottom navigation**: `NavigationBar` (M3). NOT the legacy `BottomNavigationBar`.
+- **Filter sheet**: `showModalBottomSheet` with `isScrollControlled: true`, `useSafeArea: true`
+- **Primary CTA ("Apply / Visit")**: `FilledButton`
+- **Secondary actions**: `OutlinedButton`
+- **Countdown badge**: M3 `Badge` widget on card trailing corner
+- **Status pill**: `Chip` — colours from urgency table above
+- **Search**: `SearchBar` (M3) at top of Browse screen
+- **Programme detail hero**: `SliverAppBar` with `pinned: true`, `expandedHeight: 180`
+
+## Typography — M3 scale, no custom fonts at MVP
+| Use case                  | Style           |
+|---------------------------|-----------------|
+| Programme name (card)     | `titleMedium`   |
+| Deadline countdown        | `labelLarge`    |
+| Programme description     | `bodyMedium`    |
+| Stipend amount            | `titleSmall`    |
+| Section labels            | `labelMedium`   |
+| Detail screen body        | `bodyLarge`     |

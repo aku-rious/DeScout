@@ -1,0 +1,55 @@
+---
+description: Documentation maintenance — what lives where, when to update each file. Always apply.
+alwaysApply: true
+---
+
+# Documentation Standards
+
+## Source-of-truth map
+| Question                                    | Go to                          |
+|---------------------------------------------|--------------------------------|
+| What should this feature do?                | `docs/PRD.md`                  |
+| What columns does table X have?             | `SCHEMA.md`                    |
+| Where does file Y live in the project?      | `ARCHITECTURE.md`              |
+| Which component/colour for this UI pattern? | `.cursor/rules/theme.mdc`      |
+| How does the ingestion cron work?           | `.cursor/rules/ingestion.mdc`  |
+| What's the push notification abstraction?   | `.cursor/rules/flutter.mdc`    |
+| What are the open product decisions?        | `docs/PRD.md` → Questions tracker |
+
+## When to update SCHEMA.md
+Immediately after every Supabase migration that adds, renames, or removes a column, table, enum
+value, index, or RLS policy. Cursor reads `SCHEMA.md` as its authoritative column reference —
+a stale schema file causes hallucinated column names in generated queries.
+
+## When to update ARCHITECTURE.md
+- Adding a new feature folder under `lib/src/features/`
+- Adding or changing a route in `app_router.dart`
+- Adding a new GitHub Actions workflow
+- Changing the build flavor setup
+
+## When to update README.md
+- Completing a release milestone (update the "Status" badge and feature list)
+- Adding a new build command or prerequisite
+- Changing the Supabase setup steps
+
+## When to update docs/PRD.md
+- Closing an open decision in the Questions tracker
+- Adding a feature to or removing one from a release phase
+- Confirming the app name
+
+## Files that do NOT need to be updated after every change
+- `.cursor/rules/*.mdc` — update only when the convention itself changes, not on every implementation
+- `LICENSE` — never changes
+- `data/seed/internships_seed.json` — source data, not documentation
+
+## Docs folder layout
+```
+docs/
+  PRD.md                  # full product requirements document
+```
+
+## Style
+- All documentation in Markdown.
+- Tables preferred over bullet lists for structured comparisons.
+- Code blocks for any code reference, command, or SQL.
+- No stale TODOs — resolve or file an issue.

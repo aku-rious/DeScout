@@ -1,0 +1,107 @@
+---
+description: Flutter/Dart conventions for DeScout — folder structure, Riverpod patterns, go_router rules.
+globs: ["**/*.dart"]
+alwaysApply: false
+---
+
+# Flutter Conventions
+
+## Folder structure (feature-first)
+```
+lib/
+  main_standard.dart       # entry: injects OneSignalNotificationService
+  main_fdroid.dart         # entry: injects UnifiedPushNotificationService
+  main_huawei.dart         # entry: injects HuaweiNotificationService
+  src/
+    app.dart               # MaterialApp.router — theme + router wired here
+    features/
+      programmes/
+        data/              # ProgrammesRepository, ProgrammesRemoteDataSource
+        domain/            # Programme model, ProgrammeType enum, ProgrammeStatus enum
+        presentation/
+          programmes_list_screen.dart
+          programme_detail_screen.dart
+          programmes_filter_sheet.dart
+          providers/       # programmes_provider.dart, filter_provider.dart
+      auth/
+        data/              # AuthRepository
+        presentation/
+          login_screen.dart
+          register_screen.dart
+          providers/       # auth_provider.dart
+      saved/
+        data/              # SavedRepository
+        presentation/
+          saved_screen.dart
+          providers/       # saved_provider.dart
+      notifications/
+        presentation/
+          providers/       # notification_provider.dart
+      admin/
+        presentation/
+          review_queue_screen.dart
+          providers/       # review_queue_provider.dart
+      submit/
+        presentation/
+          submit_programme_screen.dart
+    core/
+      notifications/
+        notification_service.dart               # abstract interface
+        onesignal_notification_service.dart
+        unified_push_notification_service.dart
+        huawei_notification_service.dart
+      router/
+        app_router.dart                         # all routes here
+        app_routes.dart                         # route name constants
+      supabase/
+        supabase_init.dart                      # Supabase.initialize()
+        database_types.dart                     # generated: supabase gen types dart
+      theme/
+        app_theme.dart                          # MaterialTheme class
+      utils/
+        date_utils.dart
+        constants.dart
+```
+
+## Riverpod rules
+- Use `@riverpod` annotation + `riverpod_generator`. Run `dart run build_runner watch` during dev.
+- **`AsyncNotifier<T>`** — any provider that performs async work (Supabase queries, etc.)
+- **`Notifier<T>`** — sync state (filter state, UI toggles, tab index)
+- Never use `StateProvider` for anything with more than one field.
+- Providers live in `features/<feature>/presentation/providers/`.
+- Widgets never call Supabase directly. Flow: widget → provider → repository → Supabase.
+- Always expose `AsyncValue<T>` from async providers. Widgets consume `.when(data:, loading:, error:)`.
+
+## go_router rules
+- All routes defined in `lib/src/core/router/app_router.dart`. No `Navigator.push` anywhere.
+- Route name constants in `AppRoutes` class in `app_routes.dart`.
+- Auth guard in router's `redirect` callback — never in a screen's `initState` or `build`.
+- Use `context.go()` for replacing stack, `context.push()` for pushing. Never `Navigator.*`.
+
+## NotificationService pattern
+```dart
+// lib/src/core/notifications/notification_service.dart
+abstract class NotificationService {
+  Future<void> initialize();
+  Future<void> scheduleDeadlineReminder({
+    required String programmeId,
+    required String programmeName,
+    required DateTime deadline,
+  });
+  Future<void> cancel(String programmeId);
+}
+```
+Each main_*.dart overrides `notificationServiceProvider` via Riverpod's `ProviderScope` overrides.
+
+## Error handling
+- Catch `PostgrestException` in the repository layer; throw domain exceptions.
+- Never `try/catch` in a widget or provider build method.
+- Sentry captures unhandled exceptions — wired in `main_*.dart` via `SentryFlutter.init`.
+
+## Code style
+- `const` constructors everywhere possible.
+- One public widget per file; filename matches class name (snake_case ↔ PascalCase).
+- Screen files: `*_screen.dart`. Reusable widgets: `*_card.dart`, `*_tile.dart`, etc.
+- No logic in `build()`. Extract to a method or provider if it needs more than one expression.
+- Private members prefixed `_`.
+- Avoid `late` unless absolutely necessary; prefer nullable + null-check.

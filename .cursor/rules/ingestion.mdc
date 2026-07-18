@@ -1,0 +1,93 @@
+---
+description: Data ingestion cron scripts in scripts/ and .github/workflows/. Apply when editing those paths.
+globs: ["scripts/**", ".github/workflows/**", "**/*.mjs", "**/*.py"]
+alwaysApply: false
+---
+
+# Data Ingestion Conventions
+
+## Tier overview
+| Tier | Type              | Schedule | Sources                                                      |
+|------|-------------------|----------|--------------------------------------------------------------|
+| 1    | Manual seed       | Once     | `data/seed/internships_seed.json` → Supabase                 |
+| 2    | Structured feeds  | Daily    | Devpost RSS, DoraHacks API, MLH iCal                         |
+| 3    | Playwright scrape | Weekly   | LFX Mentorship, GSoC, Outreachy, Hyperledger, LFN, Open Mainframe |
+| 4    | Discovery         | Daily    | Google Custom Search API (10–15 queries/day, free tier)      |
+
+## Mandatory fields on every upserted row
+```json
+{ "name": "...", "url": "...", "type": "...", "source": "...", "reviewed": false }
+```
+`reviewed` MUST be `false` from scripts. Admin approves in-app. Never set `true` programmatically.
+
+## Upsert key
+Upsert on `url` (unique constraint). On conflict, update `updated_at` and any changed fields.
+Never insert a duplicate URL.
+
+## Source field values — use exactly
+| Script / feed           | `source` value          |
+|-------------------------|-------------------------|
+| Seed script             | `manual`                |
+| Devpost RSS             | `devpost_rss`           |
+| DoraHacks JSON API      | `dorahacks_api`         |
+| MLH iCal                | `mlh_ical`              |
+| LFX Playwright          | `playwright_lfx`        |
+| GSoC Playwright         | `playwright_gsoc`       |
+| Outreachy Playwright    | `playwright_outreachy`  |
+| Hyperledger Playwright  | `playwright_hyperledger`|
+| LFN Playwright          | `playwright_lfn`        |
+| Custom Search discovery | `custom_search`         |
+
+## nigeria_eligible heuristic
+Set `nigeria_eligible = true` if description/eligibility text includes any of:
+`worldwide`, `global`, `open to all`, `international`, `Africa`, `Nigeria`, `sub-saharan`
+Set `nigeria_eligible = null` (unknown) if eligibility text is absent or ambiguous.
+Admin resolves during review queue. Never assume false.
+
+## Security
+```bash
+# All scripts read from environment — never hardcode
+SUPABASE_URL=...              # from GitHub Actions secrets
+SUPABASE_SERVICE_ROLE_KEY=... # from GitHub Actions secrets
+GOOGLE_CSE_API_KEY=...        # Custom Search API key
+GOOGLE_CSE_CX=...             # Programmable Search Engine ID
+```
+Scripts must `process.exit(1)` (Node) or `sys.exit(1)` (Python) on any Supabase write failure
+so the GitHub Actions run is marked failed and visible in the dashboard.
+
+## DoraHacks API
+Endpoint: `GET https://dorahacks.io/api/hackathon/list/`
+Returns structured JSON with `title`, `start_time`, `end_time`, `prize_pool`, `is_online`.
+Map `is_online: true` → `remote: true`. `prize_pool > 0` → `stipend_usd: prize_pool` (approximate).
+
+## Discovery layer (Tier 4)
+- Google Custom Search JSON API with a Programmable Search Engine configured across programme/fellowship domains
+- Daily budget: 10–15 queries (free tier cap: 100/day)
+- Sample queries:
+  - `"open source fellowship 2026 stipend"`
+  - `"hackathon 2026 Nigeria remote"`
+  - `"developer programme 2026 application open"`
+- Pipeline: search → deduplicate against existing `url` values → fetch + parse each new page → upsert with `source: 'custom_search'`, `reviewed: false`
+- For complex page parsing, an optional Claude API call extracts structured fields
+
+## scripts/ folder structure
+```
+scripts/
+  seed/
+    parse_internships.py       # Tier 1: parse internships.txt → JSON → Supabase
+    internships_seed.json      # generated intermediate (not committed if large)
+  ingest/
+    devpost_rss.mjs            # Tier 2
+    dorahacks_api.mjs          # Tier 2
+    mlh_ical.mjs               # Tier 2
+    lfx_scrape.mjs             # Tier 3 (Playwright)
+    gsoc_scrape.mjs            # Tier 3
+    outreachy_scrape.mjs       # Tier 3
+    hyperledger_scrape.mjs     # Tier 3
+  discovery/
+    custom_search.mjs          # Tier 4
+  lib/
+    supabase_client.mjs        # shared: createClient(url, serviceRoleKey)
+    nigeria_heuristic.mjs      # shared: classifyNigeriaEligibility(text)
+    upsert.mjs                 # shared: upsertProgramme(client, data)
+```

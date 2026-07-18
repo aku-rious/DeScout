@@ -1,0 +1,76 @@
+---
+description: Supabase patterns, RLS rules, and type safety for DeScout.
+globs: ["**/*.dart", "**/supabase/**", "**/migrations/**"]
+alwaysApply: false
+---
+
+# Supabase Conventions
+
+## Initialisation
+One call in `lib/src/core/supabase/supabase_init.dart`, called from each `main_*.dart`:
+```dart
+await Supabase.initialize(
+  url: const String.fromEnvironment('DESCOUT_SUPABASE_URL'),
+  anonKey: const String.fromEnvironment('DESCOUT_SUPABASE_ANON_KEY'),
+);
+```
+Use `--dart-define=DESCOUT_SUPABASE_URL=...` at build time. Never hardcode credentials.
+
+## Type safety
+- Generated types live in `lib/src/core/supabase/database_types.dart`.
+- Regenerate after every migration: `supabase gen types dart --local > lib/src/core/supabase/database_types.dart`
+- Commit the generated file. Cursor reads it to avoid hallucinating column names.
+- Never construct raw `Map<String, dynamic>` for inserts — use typed fromJson/toJson on domain models.
+
+## The reviewed=true rule — CRITICAL
+Every query against `programmes` in the Flutter app MUST include:
+```dart
+.eq('reviewed', true)
+```
+No exceptions. Unreviewed entries are visible only in the admin review queue screen.
+The admin screen uses the service role via a Supabase Edge Function — never in the Flutter client directly.
+
+## Repository pattern
+```dart
+// Always scope to reviewed=true; always catch PostgrestException
+Future<List<Programme>> fetchOpenProgrammes() async {
+  try {
+    final response = await Supabase.instance.client
+        .from('programmes')
+        .select()
+        .eq('reviewed', true)
+        .neq('status', 'closed')
+        .order('closes_at', ascending: true);
+    return (response as List).map(Programme.fromJson).toList();
+  } on PostgrestException catch (e) {
+    throw ProgrammesException(e.message);
+  }
+}
+```
+
+## Auth
+- After sign-in, query `users` table to check `is_admin` flag; cache in `authProvider`.
+- Admin routes guarded in router redirect: if `!isAdmin`, redirect to `/`.
+- Password reset and email verification handled by Supabase's built-in email templates.
+- Session persistence: `Supabase.initialize` with `authOptions: FlutterAuthClientOptions(authFlowType: AuthFlowType.pkce)`.
+
+## Service role key
+- NEVER in Flutter app code. Not in `.env`. Not in `pubspec.yaml`. Not anywhere in `lib/`.
+- Stored as `SUPABASE_SERVICE_ROLE_KEY` in GitHub Actions repository secrets.
+- Used only in `scripts/` (seed, ingestion crons) and Supabase Edge Functions.
+- If you find yourself needing the service role in the app, redesign using a Supabase Edge Function instead.
+
+## RLS policies (reference — full detail in SCHEMA.md)
+| Table              | Read                          | Write                              |
+|--------------------|-------------------------------|------------------------------------|
+| `programmes`       | Public (anon key)             | Service role + admin only          |
+| `tags`             | Public (anon key)             | Service role + admin only          |
+| `programme_tags`   | Public (anon key)             | Service role + admin only          |
+| `users`            | Own row only                  | Own row only                       |
+| `saved_programmes` | Own rows only (user_id match) | Own rows only                      |
+
+## Realtime
+Not used at MVP. Do not enable realtime on any table without a deliberate decision.
+
+## Storage
+Not used at v0.1. Reserved for future programme logo/banner images.
