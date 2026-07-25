@@ -40,7 +40,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
         return;
       }
-      context.go(Routes.programmes);
+      final from = GoRouterState.of(context).uri.queryParameters["from"];
+      if (from != null && from.startsWith("/") && !from.startsWith("//")) {
+        context.go(from);
+      } else {
+        context.go(Routes.programmes);
+      }
     });
 
     final isLoading = ref.watch(authControllerProvider).isLoading;

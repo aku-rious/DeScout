@@ -25,6 +25,18 @@ GitHub epic: [#1](https://github.com/aku-rious/DeScout/issues/1)
 - Settings screen with sign-out
 - Added `url_launcher` for programme URLs
 
+## v0.1 seed + polish (2026-07-18)
+
+- Tier-1 seed: `data/seed/programmes_seed.json` (19 programmes); uploaded via Supabase MCP
+- Removed one-off `scripts/seed/` and `scripts/lib/` after seeding; Tier 2+ crons add `scripts/` back in v0.3
+- `ingestion.mdc`: Tier-1 via MCP `execute_sql`; `reviewed: true` for manual seed
+- Programmes list: empty state with bookmark icon + Clear filters
+- Programme detail: `DeadlineBadge` `nullLabel` → "Deadline TBA" when no deadline
+- Auth: login redirect preserves `from` query param for protected routes
+- Tests: router redirect, empty state, detail TBA chip (`test/`)
+
+GitHub slices: [#9](https://github.com/aku-rious/DeScout/issues/9)–[#15](https://github.com/aku-rious/DeScout/issues/15) (closed) · PRD in `docs/PRD.md`
+
 ## Error handling + Talker (2026-07-18)
 
 - Copyright holder renamed to **Polymath** (was in conventions template)

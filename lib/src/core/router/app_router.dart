@@ -35,6 +35,7 @@ GoRouter router(RouterRef ref) {
   ref.listen(isAdminProvider, (_, _) => refreshNotifier.value++);
 
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: Routes.programmes,
     refreshListenable: refreshNotifier,
     redirect: (context, state) {
@@ -48,7 +49,8 @@ GoRouter router(RouterRef ref) {
       }
 
       if (!isLoggedIn && _authRequiredPaths.contains(path)) {
-        return Routes.login;
+        final from = Uri.encodeComponent(state.uri.toString());
+        return "${Routes.login}?from=$from";
       }
 
       if (isLoggedIn && _isAuthRoute(path)) {

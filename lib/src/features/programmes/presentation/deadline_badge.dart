@@ -6,9 +6,14 @@ import "package:flutter/material.dart";
 
 /// Countdown chip coloured by deadline urgency.
 class DeadlineBadge extends StatelessWidget {
-  const DeadlineBadge({required this.closesAt, super.key});
+  const DeadlineBadge({
+    required this.closesAt,
+    this.nullLabel = "No deadline",
+    super.key,
+  });
 
   final DateTime? closesAt;
+  final String nullLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +24,7 @@ class DeadlineBadge extends StatelessWidget {
 
     return Chip(
       label: Text(
-        formatDeadlineLabel(closesAt),
+        closesAt == null ? nullLabel : formatDeadlineLabel(closesAt),
         style: textTheme.labelLarge?.copyWith(color: colors.foreground),
       ),
       backgroundColor: colors.background,

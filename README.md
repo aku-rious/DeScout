@@ -48,8 +48,7 @@ notifies you before deadlines close.
 - Dart SDK ≥ 3.4 (included with Flutter)
 - Android Studio / VS Code with Flutter extension
 - Supabase CLI (`npm install -g supabase`)
-- Node.js ≥ 20 (for ingestion scripts)
-- Python ≥ 3.11 (for seed script)
+- Node.js ≥ 20 (for v0.3+ ingestion scripts)
 
 ---
 
@@ -94,15 +93,11 @@ flutter run --flavor standard -t lib/main_standard.dart \
   --dart-define=SUPABASE_ANON_KEY=$DESCOUT_SUPABASE_ANON_KEY
 ```
 
-### 4. Seed the database (first run)
-```bash
-# Parse internships.txt into JSON
-python scripts/seed/parse_internships.py
+### 4. Seed data
 
-# Upload to Supabase (requires service role key locally)
-SUPABASE_SERVICE_ROLE_KEY=your-local-service-role-key \
-  node scripts/seed/upload_seed.mjs
-```
+v0.1 seed is already loaded in the hosted Supabase project (`programmes_seed.json` → MCP
+`execute_sql`). To refresh locally, use Supabase MCP or dashboard SQL — see
+`.cursor/rules/ingestion.mdc` Tier 1. Do not use the anon key for writes.
 
 ---
 

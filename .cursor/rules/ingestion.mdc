@@ -9,16 +9,27 @@ alwaysApply: false
 ## Tier overview
 | Tier | Type              | Schedule | Sources                                                      |
 |------|-------------------|----------|--------------------------------------------------------------|
-| 1    | Manual seed       | Once     | `data/seed/internships_seed.json` → Supabase                 |
+| 1    | Manual seed       | Once     | `data/seed/programmes_seed.json` → Supabase via MCP `execute_sql` |
 | 2    | Structured feeds  | Daily    | Devpost RSS, DoraHacks API, MLH iCal                         |
 | 3    | Playwright scrape | Weekly   | LFX Mentorship, GSoC, Outreachy, Hyperledger, LFN, Open Mainframe |
 | 4    | Discovery         | Daily    | Google Custom Search API (10–15 queries/day, free tier)      |
 
-## Mandatory fields on every upserted row
+## Tier 1 manual seed (one-off, v0.1)
+
+Seed data lives in `data/seed/programmes_seed.json`. Upload via **Supabase MCP** (not Flutter,
+not anon key):
+
+1. `DELETE FROM programmes WHERE source = 'manual';`
+2. `INSERT INTO programmes (...) VALUES ... ON CONFLICT (url) DO UPDATE SET ...` from JSON rows
+
+Tier-1 rows MAY set `reviewed: true` (human-curated, pre-approved). No `scripts/seed/` upload
+script is kept in-repo after the initial v0.1 seed.
+
+## Mandatory fields on every upserted row (Tier 2–4)
 ```json
 { "name": "...", "url": "...", "type": "...", "source": "...", "reviewed": false }
 ```
-`reviewed` MUST be `false` from scripts. Admin approves in-app. Never set `true` programmatically.
+`reviewed` MUST be `false` from Tier 2–4 ingestion scripts. Admin approves in-app.
 
 ## Upsert key
 Upsert on `url` (unique constraint). On conflict, update `updated_at` and any changed fields.
@@ -27,7 +38,7 @@ Never insert a duplicate URL.
 ## Source field values — use exactly
 | Script / feed           | `source` value          |
 |-------------------------|-------------------------|
-| Seed script             | `manual`                |
+| Seed (Tier 1 MCP)       | `manual`                |
 | Devpost RSS             | `devpost_rss`           |
 | DoraHacks JSON API      | `dorahacks_api`         |
 | MLH iCal                | `mlh_ical`              |
@@ -70,12 +81,9 @@ Map `is_online: true` → `remote: true`. `prize_pool > 0` → `stipend_usd: pri
 - Pipeline: search → deduplicate against existing `url` values → fetch + parse each new page → upsert with `source: 'custom_search'`, `reviewed: false`
 - For complex page parsing, an optional Claude API call extracts structured fields
 
-## scripts/ folder structure
+## scripts/ folder structure (v0.3+)
 ```
 scripts/
-  seed/
-    parse_internships.py       # Tier 1: parse internships.txt → JSON → Supabase
-    internships_seed.json      # generated intermediate (not committed if large)
   ingest/
     devpost_rss.mjs            # Tier 2
     dorahacks_api.mjs          # Tier 2
@@ -86,8 +94,8 @@ scripts/
     hyperledger_scrape.mjs     # Tier 3
   discovery/
     custom_search.mjs          # Tier 4
-  lib/
-    supabase_client.mjs        # shared: createClient(url, serviceRoleKey)
-    nigeria_heuristic.mjs      # shared: classifyNigeriaEligibility(text)
-    upsert.mjs                 # shared: upsertProgramme(client, data)
+  lib/                         # shared helpers (added with Tier 2 crons)
+    supabase_client.mjs
+    nigeria_heuristic.mjs
+    upsert.mjs
 ```

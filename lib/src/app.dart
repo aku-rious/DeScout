@@ -1,11 +1,9 @@
 // Copyright (C) 2026 Polymath
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import "package:de_scout/src/core/logging/talker_diagnostics_host.dart";
 import "package:de_scout/src/core/logging/talker_provider.dart";
 import "package:de_scout/src/core/router/app_router.dart";
 import "package:de_scout/src/core/theme/app_theme.dart";
-import "package:de_scout/src/features/auth/presentation/providers/auth_provider.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:talker_flutter/talker_flutter.dart";
@@ -18,8 +16,6 @@ class DeScoutApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final talker = ref.watch(talkerProvider);
-    final isAdmin = ref.watch(isAdminProvider).value ?? false;
-    final showTalker = talkerUiEnabled(isAdmin: isAdmin);
 
     return MaterialApp.router(
       title: "DeScout",
@@ -35,11 +31,7 @@ class DeScoutApp extends ConsumerWidget {
             enableErrorAlerts: false,
             enableExceptionAlerts: false,
           ),
-          child: TalkerDiagnosticsHost(
-            talker: talker,
-            enabled: showTalker,
-            child: child ?? const SizedBox.shrink(),
-          ),
+          child: child ?? const SizedBox.shrink(),
         );
       },
     );

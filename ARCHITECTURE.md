@@ -17,7 +17,7 @@ DeScout/
 │       └── build.gradle         # productFlavors defined here
 ├── data/
 │   └── seed/
-│       └── internships_seed.json  # Tier 1 seed data parsed from internships.txt
+│       └── programmes_seed.json   # Tier 1 seed data (uploaded via Supabase MCP)
 ├── docs/
 │   └── PRD.md                   # full Product Requirements Document
 ├── ios/                         # CodeMagic builds iOS from here
@@ -89,8 +89,7 @@ DeScout/
 │               ├── date_utils.dart
 │               ├── deadline_utils.dart                     # DeadlineState classifier
 │               └── constants.dart
-├── scripts/
-│   ├── seed/parse_internships.py
+├── scripts/                     # v0.3+ ingestion crons (see ingestion.mdc)
 │   ├── ingest/
 │   │   ├── devpost_rss.mjs
 │   │   ├── dorahacks_api.mjs

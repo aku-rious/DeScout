@@ -33,6 +33,11 @@ DeScout aggregates programmes into a Flutter mobile app with filtering, deadline
 19. As a developer, I want an isAdmin provider chain wired to the router, so that admin guards exist before v0.3 UI.
 20. As a developer, I want AGENTS.md as an index to rule files, so that agents read one file then follow links.
 
+20. As a developer, I want seed data from internships.txt uploaded to Supabase, so that v0.1 browse uses real programmes.
+21. As a developer, I want an empty-state when filters match nothing, so that I can clear filters in one tap.
+22. As a developer, I want "Deadline TBA" on programme detail when closes_at is unknown, so that null deadlines are explicit.
+23. As a developer, I want post-login redirect to my original route via `from`, so that deep links to protected screens work.
+
 ## Implementation Decisions
 
 - **v0.1 scope:** Scaffold only — folder tree, core plumbing, placeholder screens, no feature logic, no real push SDK calls.
@@ -46,6 +51,12 @@ DeScout aggregates programmes into a Flutter mobile app with filtering, deadline
 - **Theme:** `lib/theme.dart` unchanged; `app_theme.dart` exposes `DeScoutLightTheme`/`DeScoutDarkTheme` and `deadlineColour`; `deadline_utils.dart` has `classifyDeadline`.
 - **Entry points:** Sentry → Supabase init → `ProviderScope` overrides → `DeScoutApp`. Shorebird TODO in `main_standard.dart` only.
 - **Lint:** `prefer_double_quotes: true`.
+
+### v0.1 seed + polish
+
+- **Seed:** `data/seed/programmes_seed.json` uploaded via Supabase MCP `execute_sql`; Tier-1 `reviewed: true`; one-off scripts removed after seeding.
+- **Polish:** programmes empty state; detail Deadline TBA chip; auth `from` redirect.
+- **Tests:** router redirect, empty state, detail TBA (`test/`).
 
 ### Scaffold child issues
 
@@ -63,6 +74,7 @@ DeScout aggregates programmes into a Flutter mobile app with filtering, deadline
 
 - **Scaffold epic:** no automated tests (counter `widget_test.dart` removed).
 - **Post-scaffold tracer bullets:** `classifyDeadline`/`deadlineColour` unit tests; router redirect widget tests; `DeScoutApp` smoke with provider overrides.
+- **v0.1 seed polish:** `test/app_router_redirect_test.dart`, `test/programmes_empty_state_test.dart`, `test/programme_detail_deadline_test.dart`.
 - Test public behavior only — not provider codegen internals.
 
 ## Out of Scope (v0.1 scaffold)

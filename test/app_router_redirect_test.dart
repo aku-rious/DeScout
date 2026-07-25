@@ -1,0 +1,46 @@
+// Copyright (C) 2026 Polymath
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+import "package:de_scout/src/core/router/app_router.dart";
+import "package:de_scout/src/core/router/routes.dart";
+import "package:de_scout/src/features/auth/presentation/providers/auth_provider.dart";
+import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_test/flutter_test.dart";
+import "package:supabase_flutter/supabase_flutter.dart";
+
+void main() {
+  testWidgets("unauthenticated /saved redirects to login with from param", (
+    tester,
+  ) async {
+    final container = ProviderContainer(
+      overrides: [
+        authStateProvider.overrideWith(
+          (ref) => Stream<AuthState>.value(
+            const AuthState(AuthChangeEvent.signedOut, null),
+          ),
+        ),
+        isAdminProvider.overrideWith((ref) async => false),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = container.read(routerProvider);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+
+    router.go(Routes.saved);
+    await tester.pumpAndSettle();
+
+    final location = router.routerDelegate.currentConfiguration.uri.toString();
+    expect(location, startsWith(Routes.login));
+    expect(location, contains("from="));
+    expect(Uri.decodeComponent(location), contains(Routes.saved));
+    expect(find.widgetWithText(AppBar, "Sign in"), findsOneWidget);
+  });
+}

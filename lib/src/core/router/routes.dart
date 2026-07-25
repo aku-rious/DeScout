@@ -1,6 +1,8 @@
 // Copyright (C) 2026 Polymath
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+import "package:flutter/material.dart";
+
 /// Route path constants for go_router.
 abstract final class Routes {
   static const programmes = "/programmes";
@@ -12,3 +14,6 @@ abstract final class Routes {
   static const adminReview = "/admin/review";
   static const submit = "/submit";
 }
+
+/// Root navigator for go_router — used for overlay-safe diagnostics UI.
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();

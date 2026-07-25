@@ -41,7 +41,10 @@ class ProgrammeDetailScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(16),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    DeadlineBadge(closesAt: programme.closesAt),
+                    DeadlineBadge(
+                      closesAt: programme.closesAt,
+                      nullLabel: "Deadline TBA",
+                    ),
                     const SizedBox(height: 16),
                     if (programme.description != null)
                       Text(programme.description!, style: textTheme.bodyLarge),

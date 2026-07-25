@@ -40,7 +40,7 @@ a stale schema file causes hallucinated column names in generated queries.
 ## Files that do NOT need to be updated after every change
 - `.cursor/rules/*.mdc` — update only when the convention itself changes, not on every implementation
 - `LICENSE` — never changes
-- `data/seed/internships_seed.json` — source data, not documentation
+- `data/seed/programmes_seed.json` — source data, not documentation
 
 ## Docs folder layout
 ```
