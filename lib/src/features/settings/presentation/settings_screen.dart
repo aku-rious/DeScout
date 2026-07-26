@@ -2,16 +2,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import "package:de_scout/src/core/errors/error_mapper.dart";
-import "package:de_scout/src/core/logging/talker_provider.dart";
 import "package:de_scout/src/core/notifications/notification_service.dart";
 import "package:de_scout/src/core/router/routes.dart";
 import "package:de_scout/src/features/auth/presentation/providers/auth_provider.dart";
 import "package:de_scout/src/features/settings/presentation/providers/settings_provider.dart";
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
-import "package:talker_flutter/talker_flutter.dart";
 
 const _notificationDayOptions = [3, 5, 7, 14];
 
@@ -24,8 +21,6 @@ class SettingsScreen extends ConsumerWidget {
     final authAsync = ref.watch(authStateProvider);
     final email = authAsync.value?.session?.user.email;
     final isLoggedIn = authAsync.value?.session != null;
-    final isAdmin = ref.watch(isAdminProvider).value ?? false;
-    final showDiagnostics = talkerUiEnabled(isAdmin: isAdmin);
     final notificationService = ref.watch(notificationServiceProvider);
     final daysAsync = ref.watch(notificationDaysBeforeProvider);
     final permissionAsync = ref.watch(notificationPermissionGrantedProvider);
@@ -42,7 +37,6 @@ class SettingsScreen extends ConsumerWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Settings")),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -114,26 +108,6 @@ class SettingsScreen extends ConsumerWidget {
                 loading: () => const SizedBox.shrink(),
                 error: (_, _) => const SizedBox.shrink(),
               ),
-          ],
-          if (showDiagnostics) ...[
-            const SizedBox(height: 8),
-            ListTile(
-              leading: const Icon(Icons.bug_report_outlined),
-              title: const Text("Diagnostics"),
-              subtitle: Text(
-                kDebugMode
-                    ? "View Talker logs (dev build)"
-                    : "View Talker logs (admin)",
-              ),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) =>
-                        TalkerScreen(talker: ref.read(talkerProvider)),
-                  ),
-                );
-              },
-            ),
           ],
           const SizedBox(height: 8),
           FilledButton.tonal(

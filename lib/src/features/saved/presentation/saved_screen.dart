@@ -20,7 +20,6 @@ class SavedScreen extends ConsumerWidget {
     final savedAsync = ref.watch(savedProgrammesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Saved")),
       body: savedAsync.when(
         data: (saved) {
           if (saved.isEmpty) {

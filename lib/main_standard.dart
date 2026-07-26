@@ -19,6 +19,8 @@ Future<void> main() async {
 
 Future<void> _run() async {
   await initSupabase();
+  // TODO(#1): add shorebird_code_push init
+
   final notificationService = OneSignalNotificationService();
   await notificationService.initialize();
   runApp(
