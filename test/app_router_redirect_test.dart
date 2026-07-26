@@ -43,4 +43,65 @@ void main() {
     expect(Uri.decodeComponent(location), contains(Routes.saved));
     expect(find.widgetWithText(AppBar, "Sign in"), findsOneWidget);
   });
+
+  testWidgets("shell renders three bottom navigation tabs", (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        authStateProvider.overrideWith(
+          (ref) => Stream<AuthState>.value(
+            const AuthState(AuthChangeEvent.signedOut, null),
+          ),
+        ),
+        isAdminProvider.overrideWith((ref) async => false),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = container.read(routerProvider);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text("Programmes"), findsOneWidget);
+    expect(find.text("Saved"), findsOneWidget);
+    expect(find.text("Settings"), findsOneWidget);
+  });
+
+  testWidgets("unauthenticated /settings redirects to login with from param", (
+    tester,
+  ) async {
+    final container = ProviderContainer(
+      overrides: [
+        authStateProvider.overrideWith(
+          (ref) => Stream<AuthState>.value(
+            const AuthState(AuthChangeEvent.signedOut, null),
+          ),
+        ),
+        isAdminProvider.overrideWith((ref) async => false),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = container.read(routerProvider);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+
+    router.go(Routes.settings);
+    await tester.pumpAndSettle();
+
+    final location = router.routerDelegate.currentConfiguration.uri.toString();
+    expect(location, startsWith(Routes.login));
+    expect(Uri.decodeComponent(location), contains(Routes.settings));
+  });
 }

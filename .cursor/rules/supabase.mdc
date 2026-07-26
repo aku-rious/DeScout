@@ -70,7 +70,9 @@ Future<List<Programme>> fetchOpenProgrammes() async {
 | `saved_programmes` | Own rows only (user_id match) | Own rows only                      |
 
 ## Realtime
-Not used at MVP. Do not enable realtime on any table without a deliberate decision.
+v0.2 exception: `saved_programmes` uses Supabase Realtime so bookmark state syncs
+across devices and `isSavedProvider` stays derived from a single stream. Do not
+enable Realtime on other tables without a deliberate decision.
 
 ## Storage
 Not used at v0.1. Reserved for future programme logo/banner images.

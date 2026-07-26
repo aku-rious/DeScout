@@ -21,4 +21,9 @@ abstract final class Cols {
   static const status = "status";
   static const userId = "user_id";
   static const programmeId = "programme_id";
+  static const applicationStatus = "application_status";
+  static const notes = "notes";
+  static const createdAt = "created_at";
+  static const notificationDaysBefore = "notification_days_before";
+  static const pushFlavor = "push_flavor";
 }

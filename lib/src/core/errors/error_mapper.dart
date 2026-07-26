@@ -14,6 +14,8 @@ abstract final class ErrorMapper {
   static const authMessage = "Sign-in failed. Check your email and password.";
   static const programmesMessage =
       "Could not load programmes. Please try again.";
+  static const savedMessage =
+      "Could not update saved programmes. Please try again.";
 
   /// Returns a [DeScoutException] with a safe [userMessage].
   static DeScoutException map(Object error, {required String fallback}) {

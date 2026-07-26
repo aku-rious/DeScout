@@ -1,6 +1,7 @@
 // Copyright (C) 2026 Polymath
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+import "package:de_scout/src/core/router/main_shell_scaffold.dart";
 import "package:de_scout/src/core/router/routes.dart";
 import "package:de_scout/src/features/admin/presentation/review_queue_screen.dart";
 import "package:de_scout/src/features/auth/presentation/login_screen.dart";
@@ -27,6 +28,14 @@ const _authRequiredPaths = <String>{
 bool _isAuthRoute(String path) =>
     path == Routes.login || path == Routes.register;
 
+bool _requiresAuth(String path) {
+  if (_authRequiredPaths.contains(path)) {
+    return true;
+  }
+  return path.startsWith("${Routes.saved}/") ||
+      path.startsWith("${Routes.settings}/");
+}
+
 @riverpod
 GoRouter router(RouterRef ref) {
   final refreshNotifier = ValueNotifier<int>(0);
@@ -48,12 +57,16 @@ GoRouter router(RouterRef ref) {
         return Routes.programmes;
       }
 
-      if (!isLoggedIn && _authRequiredPaths.contains(path)) {
+      if (!isLoggedIn && _requiresAuth(path)) {
         final from = Uri.encodeComponent(state.uri.toString());
         return "${Routes.login}?from=$from";
       }
 
       if (isLoggedIn && _isAuthRoute(path)) {
+        final from = state.uri.queryParameters["from"];
+        if (from != null && from.startsWith("/") && !from.startsWith("//")) {
+          return from;
+        }
         return Routes.programmes;
       }
 
@@ -65,16 +78,45 @@ GoRouter router(RouterRef ref) {
     },
     routes: [
       GoRoute(path: "/", redirect: (_, _) => Routes.programmes),
-      GoRoute(
-        path: Routes.programmes,
-        name: "programmes",
-        builder: (_, _) => const ProgrammesListScreen(),
-        routes: [
-          GoRoute(
-            path: ":id",
-            name: "programmeDetail",
-            builder: (_, state) =>
-                ProgrammeDetailScreen(id: state.pathParameters["id"]!),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return MainShellScaffold(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.programmes,
+                name: "programmes",
+                builder: (_, _) => const ProgrammesListScreen(),
+                routes: [
+                  GoRoute(
+                    path: ":id",
+                    name: "programmeDetail",
+                    builder: (_, state) =>
+                        ProgrammeDetailScreen(id: state.pathParameters["id"]!),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.saved,
+                name: "saved",
+                builder: (_, _) => const SavedScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.settings,
+                name: "settings",
+                builder: (_, _) => const SettingsScreen(),
+              ),
+            ],
           ),
         ],
       ),
@@ -87,16 +129,6 @@ GoRouter router(RouterRef ref) {
         path: Routes.register,
         name: "register",
         builder: (_, _) => const RegisterScreen(),
-      ),
-      GoRoute(
-        path: Routes.saved,
-        name: "saved",
-        builder: (_, _) => const SavedScreen(),
-      ),
-      GoRoute(
-        path: Routes.settings,
-        name: "settings",
-        builder: (_, _) => const SettingsScreen(),
       ),
       GoRoute(
         path: Routes.submit,

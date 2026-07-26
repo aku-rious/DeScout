@@ -144,3 +144,41 @@ class UsersRow {
   final bool isAdmin;
   final DateTime createdAt;
 }
+
+/// Row shape for `saved_programmes`.
+class SavedProgrammesRow {
+  const SavedProgrammesRow({
+    required this.id,
+    required this.userId,
+    required this.programmeId,
+    required this.applicationStatus,
+    this.notes,
+    required this.createdAt,
+    this.programme,
+  });
+
+  factory SavedProgrammesRow.fromJson(Json json) {
+    final programmeJson = json["programmes"];
+    return SavedProgrammesRow(
+      id: json["id"] as String,
+      userId: json["user_id"] as String,
+      programmeId: json["programme_id"] as String,
+      applicationStatus: ApplicationStatusDb.fromJson(
+        json["application_status"] as String,
+      ),
+      notes: json["notes"] as String?,
+      createdAt: DateTime.parse(json["created_at"] as String),
+      programme: programmeJson == null
+          ? null
+          : ProgrammesRow.fromJson(programmeJson as Json),
+    );
+  }
+
+  final String id;
+  final String userId;
+  final String programmeId;
+  final ApplicationStatusDb applicationStatus;
+  final String? notes;
+  final DateTime createdAt;
+  final ProgrammesRow? programme;
+}

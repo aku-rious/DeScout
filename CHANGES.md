@@ -44,3 +44,17 @@ GitHub slices: [#9](https://github.com/aku-rious/DeScout/issues/9)–[#15](https
 - `AsyncErrorView` for user-safe async error UI
 - Talker overlay in debug; Settings → Diagnostics for admins in prod
 - Dependencies: `talker`, `talker_flutter`
+
+## v0.2 save, push, auth (2026-07-26)
+
+- Saved programmes: `SavedRepository` with Realtime stream, `ApplicationStatus`, notes, bookmark UI
+- Saved tab: pipeline sections (Interested → Applied → Accepted → Rejected), swipe-to-unsave with undo
+- Unreviewed programme placeholder cards (Option B) when RLS blocks joined programme data
+- Bottom nav shell: Programmes / Saved / Settings via `StatefulShellRoute`
+- Auth polish: register honors `?from=`; bookmark SnackBar Sign in passes current URI
+- OneSignal (standard flavor): init, permission after first save, deep link via `programme_id`
+- Settings: notification days dropdown (3/5/7/14), enable-notifications tile when denied
+- `UserSettingsRepository` for `users.notification_days_before` and `push_flavor`
+- Dependencies: `onesignal_flutter`, `shared_preferences`
+- Tests: `saved_repository_test.dart`; router shell + settings redirect tests
+

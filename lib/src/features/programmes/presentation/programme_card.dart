@@ -3,6 +3,7 @@
 
 import "package:de_scout/src/features/programmes/domain/programme.dart";
 import "package:de_scout/src/features/programmes/presentation/deadline_badge.dart";
+import "package:de_scout/src/features/saved/presentation/widgets/bookmark_button.dart";
 import "package:flutter/material.dart";
 
 /// Card showing a programme summary on the browse list.
@@ -40,6 +41,8 @@ class ProgrammeCard extends StatelessWidget {
                   Expanded(
                     child: Text(programme.name, style: textTheme.titleMedium),
                   ),
+                  BookmarkButton(programmeId: programme.id),
+                  const SizedBox(width: 4),
                   DeadlineBadge(closesAt: programme.closesAt),
                 ],
               ),

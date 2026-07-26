@@ -9,6 +9,15 @@ part "notification_service.g.dart";
 abstract class NotificationService {
   Future<void> initialize();
 
+  /// Requests OS notification permission. Returns true when granted.
+  Future<bool> promptForPermission();
+
+  /// Whether push notifications are available for this build flavor.
+  bool get pushAvailable;
+
+  /// Whether the user has granted OS notification permission.
+  Future<bool> hasPermission();
+
   /// Schedule a push notification [daysBefore] days before [closesAt].
   ///
   /// [programmeId] is used as the notification identifier for cancellation.

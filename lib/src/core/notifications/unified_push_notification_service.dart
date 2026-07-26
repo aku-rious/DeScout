@@ -2,14 +2,23 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import "package:de_scout/src/core/notifications/notification_service.dart";
+import "package:flutter/foundation.dart";
 
-/// UnifiedPush backend for the `fdroid` flavor.
+/// UnifiedPush backend stub for the `fdroid` flavor.
 class UnifiedPushNotificationService implements NotificationService {
   @override
-  Future<void> initialize() {
-    // TODO(#1): implement UnifiedPush SDK
-    throw UnimplementedError("UnifiedPushNotificationService.initialize");
+  bool get pushAvailable => false;
+
+  @override
+  Future<void> initialize() async {
+    debugPrint("Push not configured for this flavor");
   }
+
+  @override
+  Future<bool> promptForPermission() async => false;
+
+  @override
+  Future<bool> hasPermission() async => false;
 
   @override
   Future<void> scheduleDeadlineReminder({
@@ -17,16 +26,8 @@ class UnifiedPushNotificationService implements NotificationService {
     required String programmeName,
     required DateTime closesAt,
     required int daysBefore,
-  }) {
-    // TODO(#1): implement UnifiedPush SDK
-    throw UnimplementedError(
-      "UnifiedPushNotificationService.scheduleDeadlineReminder",
-    );
-  }
+  }) async {}
 
   @override
-  Future<void> cancel(String programmeId) {
-    // TODO(#1): implement UnifiedPush SDK
-    throw UnimplementedError("UnifiedPushNotificationService.cancel");
-  }
+  Future<void> cancel(String programmeId) async {}
 }

@@ -148,7 +148,7 @@ Defined in `lib/src/core/router/app_router.dart`.
 
 **Root redirect:** `/` → `/programmes`
 
-**Bottom navigation (planned):** Programmes (`/programmes`), Saved (`/saved`), Submit (`/submit`)
+**Bottom navigation:** Programmes (`/programmes`), Saved (`/saved`), Settings (`/settings`) — implemented via `StatefulShellRoute` in `main_shell_scaffold.dart`; Submit (`/submit`) planned.
 
 ---
 
