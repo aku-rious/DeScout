@@ -12,9 +12,11 @@
             "flutterMode": "debug",
             "toolArgs": [
                 // "--dart-define-from-file=.env"
+                // "--verbose",
                 "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
                 "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
                 "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+                "--dart-define=DESCOUT_ONESIGNAL_APP_ID=${env:DESCOUT_ONESIGNAL_APP_ID}"
             ]
         },
         // {
@@ -37,6 +39,7 @@
                 "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
                 "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
                 "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+                "--dart-define=DESCOUT_ONESIGNAL_APP_ID=${env:DESCOUT_ONESIGNAL_APP_ID}"
             ]
         },
         {
@@ -50,6 +53,7 @@
                 "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
                 "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
                 "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+                "--dart-define=DESCOUT_ONESIGNAL_APP_ID=${env:DESCOUT_ONESIGNAL_APP_ID}"
             ],
             "toolArgs": [
                 "build",
@@ -67,6 +71,7 @@
                 "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
                 "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
                 "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+                "--dart-define=DESCOUT_ONESIGNAL_APP_ID=${env:DESCOUT_ONESIGNAL_APP_ID}"
             ]
         },
         {
@@ -80,6 +85,7 @@
                 "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
                 "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
                 "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+                "--dart-define=DESCOUT_ONESIGNAL_APP_ID=${env:DESCOUT_ONESIGNAL_APP_ID}"
             ],
             "toolArgs": [
                 "build",
@@ -97,6 +103,7 @@
                 "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
                 "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
                 "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+                "--dart-define=DESCOUT_ONESIGNAL_APP_ID=${env:DESCOUT_ONESIGNAL_APP_ID}"
             ]
         },
         {
@@ -110,6 +117,7 @@
                 "--dart-define=DESCOUT_SUPABASE_URL=${env:DESCOUT_SUPABASE_URL}",
                 "--dart-define=DESCOUT_SUPABASE_ANON_KEY=${env:DESCOUT_SUPABASE_ANON_KEY}",
                 "--dart-define=SENTRY_DSN=${env:DESCOUT_SENTRY_DSN}",
+                "--dart-define=DESCOUT_ONESIGNAL_APP_ID=${env:DESCOUT_ONESIGNAL_APP_ID}"
             ],
             "toolArgs": [
                 "build",

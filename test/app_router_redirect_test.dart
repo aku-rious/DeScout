@@ -104,4 +104,80 @@ void main() {
     expect(location, startsWith(Routes.login));
     expect(Uri.decodeComponent(location), contains(Routes.settings));
   });
+
+  testWidgets("non-admin authenticated /admin/review redirects to programmes", (
+    tester,
+  ) async {
+    final container = ProviderContainer(
+      overrides: [
+        authStateProvider.overrideWith(
+          (ref) => Stream<AuthState>.value(
+            AuthState(
+              AuthChangeEvent.signedIn,
+              Session(
+                accessToken: "token",
+                tokenType: "bearer",
+                user: const User(
+                  id: "user-1",
+                  appMetadata: {},
+                  userMetadata: {},
+                  aud: "authenticated",
+                  createdAt: "2026-01-01T00:00:00.000Z",
+                ),
+              ),
+            ),
+          ),
+        ),
+        isAdminProvider.overrideWith((ref) async => false),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = container.read(routerProvider);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+
+    router.go(Routes.adminReview);
+    await tester.pumpAndSettle();
+
+    final location = router.routerDelegate.currentConfiguration.uri.path;
+    expect(location, Routes.programmes);
+  });
+
+  testWidgets("unauthenticated /submit stays on submit with sign-in prompt", (
+    tester,
+  ) async {
+    final container = ProviderContainer(
+      overrides: [
+        authStateProvider.overrideWith(
+          (ref) => Stream<AuthState>.value(
+            const AuthState(AuthChangeEvent.signedOut, null),
+          ),
+        ),
+        isAdminProvider.overrideWith((ref) async => false),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = container.read(routerProvider);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+
+    router.go(Routes.submit);
+    await tester.pumpAndSettle();
+
+    final location = router.routerDelegate.currentConfiguration.uri.path;
+    expect(location, Routes.submit);
+    expect(find.text("Sign in to submit a programme"), findsOneWidget);
+  });
 }

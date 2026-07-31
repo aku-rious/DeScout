@@ -16,6 +16,12 @@ abstract final class ErrorMapper {
       "Could not load programmes. Please try again.";
   static const savedMessage =
       "Could not update saved programmes. Please try again.";
+  static const submitMessage = "Could not submit programme. Please try again.";
+  static const adminMessage =
+      "Could not complete admin action. Please try again.";
+  static const duplicateUrlMessage =
+      "A programme with this URL already exists.";
+  static const adminAccessMessage = "You don't have admin access.";
 
   /// Returns a [DeScoutException] with a safe [userMessage].
   static DeScoutException map(Object error, {required String fallback}) {

@@ -22,7 +22,6 @@ const _authRequiredPaths = <String>{
   Routes.saved,
   Routes.settings,
   Routes.adminReview,
-  Routes.submit,
 };
 
 bool _isAuthRoute(String path) =>

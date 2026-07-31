@@ -58,3 +58,12 @@ GitHub slices: [#9](https://github.com/aku-rious/DeScout/issues/9)–[#15](https
 - Dependencies: `onesignal_flutter`, `shared_preferences`
 - Tests: `saved_repository_test.dart`; router shell + settings redirect tests
 
+## v0.3 admin review queue + community submit (2026-07-31)
+
+- Admin review queue: `AdminRepository` invokes Edge Functions (`admin_fetch_unreviewed`, `admin_update_programme`); approve, reject (with confirm dialog), edit-then-approve sheet
+- `ReviewQueueScreen` with source badges, pull-to-refresh, empty state
+- Community submit: `SubmitRepository` inserts `reviewed=false`, `source=community` via RLS; duplicate URL friendly message
+- `SubmitProgrammeScreen` with required type, guest sign-in prompt; FAB on Programmes + Settings tile
+- Supabase: community INSERT policy migration; Edge Functions deployed to DeScout project
+- Tests: `submit_repository_test.dart`, `admin_repository_test.dart`; router admin/submit guard tests
+

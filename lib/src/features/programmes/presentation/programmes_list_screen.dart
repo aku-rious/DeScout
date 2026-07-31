@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import "package:de_scout/src/core/errors/error_mapper.dart";
+import "package:de_scout/src/core/router/routes.dart";
 import "package:de_scout/src/core/widgets/async_error_view.dart";
 import "package:de_scout/src/features/programmes/presentation/programme_card.dart";
 import "package:de_scout/src/features/programmes/presentation/providers/filter_provider.dart";
@@ -19,6 +20,11 @@ class ProgrammesListScreen extends ConsumerWidget {
     final programmesAsync = ref.watch(programmesProvider);
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push(Routes.submit),
+        tooltip: "Submit a programme",
+        child: const Icon(Icons.add),
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(programmesProvider);

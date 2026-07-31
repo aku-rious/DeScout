@@ -3,7 +3,6 @@
 
 import "package:de_scout/src/core/errors/error_mapper.dart";
 import "package:de_scout/src/core/errors/error_reporter.dart";
-import "package:de_scout/src/core/supabase/database_types.dart";
 import "package:de_scout/src/core/supabase/table_names.dart";
 import "package:supabase_flutter/supabase_flutter.dart";
 
@@ -59,7 +58,7 @@ class AuthRepository {
         if (response == null) {
           return false;
         }
-        return UsersRow.fromJson(response).isAdmin;
+        return response[Cols.isAdmin] as bool? ?? false;
       },
     );
   }

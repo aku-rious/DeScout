@@ -21,6 +21,7 @@ class SettingsScreen extends ConsumerWidget {
     final authAsync = ref.watch(authStateProvider);
     final email = authAsync.value?.session?.user.email;
     final isLoggedIn = authAsync.value?.session != null;
+    final isAdmin = ref.watch(isAdminProvider).value ?? false;
     final notificationService = ref.watch(notificationServiceProvider);
     final daysAsync = ref.watch(notificationDaysBeforeProvider);
     final permissionAsync = ref.watch(notificationPermissionGrantedProvider);
@@ -110,6 +111,19 @@ class SettingsScreen extends ConsumerWidget {
               ),
           ],
           const SizedBox(height: 8),
+          ListTile(
+            leading: const Icon(Icons.add_circle_outline),
+            title: const Text("Submit a programme"),
+            subtitle: const Text("Share a hackathon or fellowship"),
+            onTap: () => context.push(Routes.submit),
+          ),
+          if (isAdmin)
+            ListTile(
+              leading: const Icon(Icons.fact_check_outlined),
+              title: const Text("Review queue"),
+              subtitle: const Text("Approve community submissions"),
+              onTap: () => context.push(Routes.adminReview),
+            ),
           FilledButton.tonal(
             onPressed: () async {
               await ref.read(authControllerProvider.notifier).signOut();

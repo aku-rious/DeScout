@@ -185,3 +185,4 @@ package-lock.json
 # Supabase related
 supabase/migrations/
 supabase/seed.sql
+supabase/functions/
