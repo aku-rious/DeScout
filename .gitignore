@@ -186,3 +186,5 @@ package-lock.json
 supabase/migrations/
 supabase/seed.sql
 supabase/functions/
+supabase/DEPLOY.md
+supabase/
