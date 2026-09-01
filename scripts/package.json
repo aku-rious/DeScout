@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@playwright/test": "^1.44.0",
+    "@supabase/supabase-js": "^2.0.0"
+  },
+  "scripts": {
+    "test": "node --test lib/*.test.mjs ingest/*.test.mjs"
+  }
+}

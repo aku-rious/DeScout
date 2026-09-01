@@ -89,19 +89,23 @@ DeScout/
 │               ├── date_utils.dart
 │               ├── deadline_utils.dart                     # DeadlineState classifier
 │               └── constants.dart
-├── scripts/                     # v0.3+ ingestion crons (see ingestion.mdc)
+├── scripts/                     # Tier 3 Playwright ingestion (see ingestion.mdc)
+│   ├── package.json
 │   ├── ingest/
-│   │   ├── devpost_rss.mjs
-│   │   ├── dorahacks_api.mjs
-│   │   ├── mlh_ical.mjs
 │   │   ├── lfx_scrape.mjs
 │   │   ├── gsoc_scrape.mjs
-│   │   └── outreachy_scrape.mjs
-│   ├── discovery/custom_search.mjs
+│   │   ├── outreachy_scrape.mjs
+│   │   ├── hyperledger_scrape.mjs
+│   │   ├── lfn_scrape.mjs
+│   │   └── __fixtures__/        # HTML fixtures for extractor unit tests
 │   └── lib/
 │       ├── supabase_client.mjs
 │       ├── nigeria_heuristic.mjs
 │       └── upsert.mjs
+├── supabase/                    # gitignored — Edge Functions + cron migrations
+│   ├── functions/               # Tier 2 + 4 ingest (deploy via CLI/MCP)
+│   └── migrations/              # pg_cron job registration
+├── CONTEXT.md                   # ingestion glossary + ADRs for agents
 ├── ARCHITECTURE.md              # this file
 ├── SCHEMA.md                    # authoritative Supabase schema
 ├── README.md

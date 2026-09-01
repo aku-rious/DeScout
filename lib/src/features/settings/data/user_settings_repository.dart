@@ -4,7 +4,6 @@
 import "package:de_scout/src/core/errors/de_scout_exception.dart";
 import "package:de_scout/src/core/errors/error_mapper.dart";
 import "package:de_scout/src/core/errors/error_reporter.dart";
-import "package:de_scout/src/core/supabase/database_types.dart";
 import "package:de_scout/src/core/supabase/table_names.dart";
 import "package:supabase_flutter/supabase_flutter.dart";
 
@@ -25,7 +24,7 @@ class UserSettingsRepository {
             .select(Cols.notificationDaysBefore)
             .eq(Cols.id, userId)
             .single();
-        return UsersRow.fromJson(response).notificationDaysBefore;
+        return response[Cols.notificationDaysBefore] as int;
       },
     );
   }

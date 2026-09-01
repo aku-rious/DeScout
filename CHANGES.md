@@ -67,3 +67,21 @@ GitHub slices: [#9](https://github.com/aku-rious/DeScout/issues/9)–[#15](https
 - Supabase: community INSERT policy migration; Edge Functions deployed to DeScout project
 - Tests: `submit_repository_test.dart`, `admin_repository_test.dart`; router admin/submit guard tests
 
+## v0.3 automated ingestion (2026-08-09)
+
+- **CONTEXT.md** — ingestion glossary and ADRs (Tier 2/4 Edge Functions, service-role seam, MLH iCal-first)
+- **Tier 2 Edge Functions** (gitignored, deploy via MCP): `ingest-devpost`, `ingest-dorahacks`, `ingest-mlh`
+- **Tier 4 Edge Function**: `ingest-custom-search` (5 sequential CSE queries/day)
+- **Shared library**: `supabase/functions/_shared/` (`supabase_admin`, `nigeria_heuristic`, `upsert`)
+- **pg_cron**: `supabase/migrations/20260809000000_cron_jobs.sql` — daily 06:00–07:00 UTC
+- **Tier 3 Playwright**: `scripts/ingest/` (LFX, GSoC, Outreachy, Hyperledger, LFN) + fixture-tested extractors
+- **GitHub Actions**: `.github/workflows/ingest_playwright.yml` — Mondays 08:00 UTC
+- All Tier 2–4 upserts force `reviewed: false`; upsert on `url` conflict
+- Node tests: `scripts/lib/*.test.mjs`, `scripts/ingest/*.test.mjs` (16 passing)
+
+**Deploy checklist (manual):**
+1. Set Edge Function secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `GOOGLE_CSE_API_KEY`, `GOOGLE_CSE_CX`
+2. Deploy functions via Supabase MCP/CLI
+3. Replace `<ANON_KEY>` in cron migration and apply
+4. Add `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` to GitHub Actions secrets
+
