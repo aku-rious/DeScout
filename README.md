@@ -139,16 +139,29 @@ dart run build_runner watch --delete-conflicting-outputs
 
 ## Data ingestion (v0.3+)
 
-Cron scripts in `scripts/`. See `.cursor/rules/ingestion.mdc` for conventions.
+| Tier | What | Where |
+|------|------|-------|
+| 2 | Devpost, DoraHacks, MLH | Supabase Edge Functions + pg_cron (daily) |
+| 3 | LFX, GSoC, Outreachy, Hyperledger, LFN, DoraHacks (full) | `scripts/ingest/` Playwright + GitHub Actions (weekly) |
+| 4 | Programme discovery | **Deferred** — Google Custom Search blocked on current GCP project |
+
+Conventions: `.cursor/rules/ingestion.mdc`. Deploy Edge Functions: `supabase/DEPLOY.md`. Agent context + ADRs: `CONTEXT.md`.
+
+**Run Tier 3 scrapers locally** (requires service role key):
 
 ```bash
-# Run individual feeds locally (requires service role key)
 export SUPABASE_URL=...
 export SUPABASE_SERVICE_ROLE_KEY=...
+cd scripts && npm install && npx playwright install chromium
+node ingest/lfx_scrape.mjs
+node ingest/dorahacks_scrape.mjs   # full DoraHacks catalog
+```
 
-node scripts/ingest/devpost_rss.mjs
-node scripts/ingest/dorahacks_api.mjs
-node scripts/ingest/mlh_ical.mjs
+**Invoke Tier 2 Edge Functions** (requires anon key):
+
+```bash
+curl -X POST "$SUPABASE_URL/functions/v1/ingest-devpost" \
+  -H "Authorization: Bearer $DESCOUT_SUPABASE_ANON_KEY"
 ```
 
 ---

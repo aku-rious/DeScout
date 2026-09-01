@@ -10,9 +10,9 @@ alwaysApply: false
 | Tier | Type              | Schedule | Runtime | Sources                                                      |
 |------|-------------------|----------|---------|--------------------------------------------------------------|
 | 1    | Manual seed       | Once     | MCP     | `data/seed/programmes_seed.json` → Supabase via MCP `execute_sql` |
-| 2    | Structured feeds  | Daily    | Edge Fn | Devpost RSS, DoraHacks API, MLH iCal (pg_cron)               |
-| 3    | Playwright scrape | Weekly   | GHA     | LFX Mentorship, GSoC, Outreachy, Hyperledger, LFN            |
-| 4    | Discovery         | Daily    | Edge Fn | Google Custom Search API (pg_cron)                           |
+| 2    | Structured feeds  | Daily    | Edge Fn | Devpost JSON API, DoraHacks HTML SSR, MLH iCal (pg_cron)     |
+| 3    | Playwright scrape | Weekly   | GHA     | LFX, GSoC, Outreachy, Hyperledger, LFN, DoraHacks (full)     |
+| 4    | Discovery         | Daily    | Edge Fn | Google Custom Search (**deferred** — see Tier 4 section)       |
 
 ## Tier 1 manual seed (one-off, v0.1)
 
@@ -39,7 +39,7 @@ Never insert a duplicate URL.
 | Script / feed           | `source` value          |
 |-------------------------|-------------------------|
 | Seed (Tier 1 MCP)       | `manual`                |
-| Devpost RSS             | `devpost_rss`           |
+| Devpost JSON API        | `devpost_rss`           |
 | DoraHacks JSON API      | `dorahacks_api`         |
 | MLH iCal                | `mlh_ical`              |
 | LFX Playwright          | `playwright_lfx`        |
@@ -47,6 +47,7 @@ Never insert a duplicate URL.
 | Outreachy Playwright    | `playwright_outreachy`  |
 | Hyperledger Playwright  | `playwright_hyperledger`|
 | LFN Playwright          | `playwright_lfn`        |
+| DoraHacks Playwright    | `dorahacks_api`         |
 | Custom Search discovery | `custom_search`         |
 
 ## nigeria_eligible heuristic
@@ -77,11 +78,14 @@ The Django REST list API (`/api/hackathon/`) returns 404 as of 2026. DoraHacks i
 
 Send browser `User-Agent` + `Referer: https://dorahacks.io/hackathon` on all requests.
 
-## Discovery layer (Tier 4)
+## Discovery layer (Tier 4) — deferred
+
+**Status (2026-09-01):** Non-operational on project. Google closed Custom Search JSON API to new GCP projects (`403 PERMISSION_DENIED`). Replacement provider under evaluation: **SerpAPI** or **Vertex AI Search**. Do not use Brave Search API unless pricing is confirmed acceptable.
+
+When operational:
 
 - Google Custom Search JSON API with a Programmable Search Engine (`GOOGLE_CSE_API_KEY` + `GOOGLE_CSE_CX`)
-- **Access restriction (2026):** Google closed the Custom Search JSON API to **new GCP projects**. New keys return `403 PERMISSION_DENIED` ("This project does not have the access to Custom Search JSON API"). Existing customers retain access until **Jan 1, 2027**. Alternatives: Brave Search API, SerpAPI, Vertex AI Search.
-- Daily budget: 10–15 queries (free tier cap: 100/day when access is available)
+- Daily budget: 5 queries in `ingest-custom-search` (expand cautiously; legacy free tier cap 100/day)
 - Sample queries:
   - `"open source fellowship 2026 stipend"`
   - `"hackathon 2026 Nigeria remote"`
@@ -104,6 +108,7 @@ scripts/
     outreachy_scrape.mjs       # Tier 3
     hyperledger_scrape.mjs     # Tier 3
     lfn_scrape.mjs             # Tier 3
+    dorahacks_scrape.mjs       # Tier 3 (full catalog; Edge Fn is partial)
     *_extract.mjs              # Pure HTML extractors (fixture-tested)
     __fixtures__/              # HTML fixtures for extractor tests
   lib/

@@ -1,7 +1,10 @@
 import { chromium } from "@playwright/test";
 import { upsertProgramme } from "../lib/upsert.mjs";
+import { requireSupabaseEnv } from "../lib/require_env.mjs";
 import { classifyNigeriaEligibility } from "../lib/nigeria_heuristic.mjs";
 import { extractLfnEntries } from "./wiki_extract.mjs";
+
+requireSupabaseEnv("lfn");
 
 const TARGET_URL =
   "https://wiki.lfnetworking.org/display/LN/LFN+Mentorship+Program";

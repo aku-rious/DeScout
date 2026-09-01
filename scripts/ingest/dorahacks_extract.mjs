@@ -1,29 +1,54 @@
+const SLUG_BLOCKLIST = new Set([
+  "hackathon",
+  "hackathons",
+  "hackathon-organizer-guide",
+]);
+
 /**
  * Extract DoraHacks listings from rendered HTML (Playwright page content).
+ * Uses anchor tags when present, then falls back to slug paths in SSR/NUXT payload.
  * @param {string} html
  * @returns {Array<{name: string, url: string, description?: string}>}
  */
 export function extractDoraHacksEntries(html) {
-  const entries = [];
-  const seen = new Set();
+  /** @type {Map<string, {name: string, url: string, description: string}>} */
+  const bySlug = new Map();
+
   const linkRegex =
     /<a[^>]*href="\/hackathon\/([a-z0-9-]+)\/?"[^>]*>([\s\S]*?)<\/a>/gi;
   let match;
 
   while ((match = linkRegex.exec(html)) !== null) {
     const slug = match[1];
-    if (slug === "hackathon" || seen.has(slug)) continue;
-    seen.add(slug);
+    if (SLUG_BLOCKLIST.has(slug)) continue;
     const inner = match[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-    const name = inner || slugToTitle(slug);
-    entries.push({
-      name,
+    bySlug.set(slug, {
+      name: inner || slugToTitle(slug),
       url: `https://dorahacks.io/hackathon/${slug}/`,
       description: inner,
     });
   }
 
-  return entries;
+  const slugPattern = /\/hackathon\/([a-z0-9-]+)\//g;
+  while ((match = slugPattern.exec(html)) !== null) {
+    const slug = match[1];
+    if (SLUG_BLOCKLIST.has(slug) || bySlug.has(slug)) continue;
+    bySlug.set(slug, {
+      name: slugToTitle(slug),
+      url: `https://dorahacks.io/hackathon/${slug}/`,
+      description: "",
+    });
+  }
+
+  return [...bySlug.values()];
+}
+
+/** True when page HTML is an AWS WAF challenge (no programme data). */
+export function isWafChallengeHtml(html) {
+  return (
+    /<title>\s*Human Verification\s*<\/title>/i.test(html) ||
+    html.includes("window.gokuProps")
+  );
 }
 
 function slugToTitle(slug) {

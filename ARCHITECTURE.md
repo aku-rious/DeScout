@@ -97,6 +97,7 @@ DeScout/
 │   │   ├── outreachy_scrape.mjs
 │   │   ├── hyperledger_scrape.mjs
 │   │   ├── lfn_scrape.mjs
+│   │   ├── dorahacks_scrape.mjs   # full DoraHacks catalog (WAF bypass)
 │   │   └── __fixtures__/        # HTML fixtures for extractor unit tests
 │   └── lib/
 │       ├── supabase_client.mjs
@@ -205,16 +206,29 @@ flutter build apk --flavor huawei   -t lib/main_huawei.dart   --release
 
 ```
 .github/workflows/
-  build_standard.yml      # on push to main: build standard APK, upload artifact
-  build_fdroid.yml        # on release tag: build fdroid APK
-  build_huawei.yml        # on release tag: build huawei APK
-  ingest_daily.yml        # cron 0 6 * * *: run Tier 2 feeds (Devpost, DoraHacks, MLH)
-  ingest_weekly.yml       # cron 0 7 * * 1: run Tier 3 Playwright scrapes
-  discovery_daily.yml     # cron 0 8 * * *: run Tier 4 Custom Search (10–15 queries)
-  sync_yaml_to_db.yml     # on push to main (data/ path): sync data/programmes.yaml → Supabase
+  build_standard.yml        # on push to main: build standard APK, upload artifact
+  build_fdroid.yml          # on release tag: build fdroid APK
+  build_huawei.yml          # on release tag: build huawei APK
+  ingest_playwright.yml     # cron Mon 08:00 UTC + workflow_dispatch: Tier 3 Playwright scrapes
+  sync_yaml_to_db.yml       # on push to main (data/ path): sync data/programmes.yaml → Supabase
 ```
 
+**Tier 2 + 4 ingestion** (Devpost, DoraHacks, MLH, Custom Search) runs as Supabase Edge Functions scheduled via **pg_cron** + pg_net — not GitHub Actions. See `supabase/migrations/*_cron_jobs.sql` and `supabase/DEPLOY.md`.
+
+### Ingestion runtime map (verified 2026-09-01)
+
+| Tier | Source | Runtime | Schedule | Status |
+|------|--------|---------|----------|--------|
+| 2 | Devpost | `ingest-devpost` Edge Fn | daily 06:00 UTC | OK (~61 open) |
+| 2 | DoraHacks | `ingest-dorahacks` Edge Fn | daily 06:10 UTC | OK partial (~5 featured; WAF intermittent) |
+| 2 | MLH | `ingest-mlh` Edge Fn | daily 06:20 UTC | OK |
+| 3 | LFX, GSoC, Outreachy, Hyperledger, LFN, DoraHacks | `scripts/ingest/*_scrape.mjs` | Mon 08:00 UTC GHA | pending first workflow run |
+| 4 | Discovery | `ingest-custom-search` Edge Fn | daily 07:00 UTC | **deferred** — Google CSE `403` on this GCP project |
+
+Tier 4 replacement (SerpAPI or Vertex AI Search) is an open product decision — see `CONTEXT.md` ADR-007.
+
 iOS builds run on CodeMagic triggered by release tags. Not managed in GitHub Actions.
+
 
 ---
 

@@ -85,3 +85,24 @@ GitHub slices: [#9](https://github.com/aku-rious/DeScout/issues/9)–[#15](https
 3. Replace `<ANON_KEY>` in cron migration and apply
 4. Add `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` to GitHub Actions secrets
 
+## v0.3 ingestion verification (2026-09-01)
+
+Production Edge Function smoke tests (on Supabase project):
+
+| Function | Result | Notes |
+|----------|--------|-------|
+| `ingest-devpost` | `{ ok: true, count: 61 }` | JSON API (`/api/hackathons?status[]=open`); Atom feed returns 406 |
+| `ingest-dorahacks` | `{ ok: true, count: 5 }` | HTML SSR fallback (~featured set); WAF may intermittently block → `{ skipped: true, reason: "waf_blocked" }` |
+| `ingest-mlh` | `{ ok: true, count: 1 }` | iCal primary |
+| `ingest-custom-search` | `CSE_ACCESS_DENIED` | Google closed Custom Search JSON API to new GCP projects |
+
+**Feed fixes deployed:**
+- Devpost v2: Atom → JSON API
+- DoraHacks v5: legacy API graceful fallback, HTML SSR, WAF detection + skip (no 500 on block)
+- Custom Search v3: surfaces Google error body + `CSE_ACCESS_DENIED` hint
+
+**Tier 4 status:** Deferred. `ingest-custom-search` remains deployed but fails on this GCP project. Replacement provider (SerpAPI or Vertex AI Search) to be chosen before re-enabling discovery cron.
+
+**DoraHacks full catalog:** Weekly Playwright (`dorahacks_scrape.mjs` in `.github/workflows/ingest_playwright.yml`) — authoritative when Edge Function sees WAF or partial SSR.
+
+**Next:** Run `workflow_dispatch` on Tier 3 Playwright workflow; review admin queue for `reviewed = false` rows.

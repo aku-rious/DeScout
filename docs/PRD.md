@@ -88,3 +88,4 @@ DeScout aggregates programmes into a Flutter mobile app with filtering, deadline
 ## Further Notes
 
 - Open product decisions: data licence (CC0 vs ODbL), Shorebird on Huawei, `users.push_flavor` column — see [SCHEMA.md](../SCHEMA.md) and [.cursor/rules/project.mdc](../.cursor/rules/project.mdc).
+- **Tier 4 discovery provider (v0.3):** Google Custom Search JSON API is blocked on the DeScout GCP project (`CSE_ACCESS_DENIED`). Deferred until SerpAPI or Vertex AI Search is evaluated and wired. Tier 2–3 ingestion covers structured feeds and Playwright sources in the meantime. See [CONTEXT.md](../CONTEXT.md) ADR-007.

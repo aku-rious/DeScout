@@ -23,6 +23,17 @@ jobs:
         run: npx playwright install chromium --with-deps
         working-directory: scripts
 
+      - name: Verify repository secrets
+        run: |
+          if [ -z "${{ secrets.SUPABASE_URL }}" ]; then
+            echo "::error::SUPABASE_URL repository secret is not set. Add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          if [ -z "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" ]; then
+            echo "::error::SUPABASE_SERVICE_ROLE_KEY repository secret is not set."
+            exit 1
+          fi
+
       - name: Run scrapes
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

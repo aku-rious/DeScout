@@ -1,7 +1,10 @@
 import { chromium } from "@playwright/test";
 import { upsertProgramme } from "../lib/upsert.mjs";
+import { requireSupabaseEnv } from "../lib/require_env.mjs";
 import { classifyNigeriaEligibility } from "../lib/nigeria_heuristic.mjs";
 import { extractGsocEntries } from "./gsoc_extract.mjs";
+
+requireSupabaseEnv("gsoc");
 
 const TARGET_URL = "https://summerofcode.withgoogle.com";
 
