@@ -7,12 +7,12 @@ alwaysApply: false
 # Data Ingestion Conventions
 
 ## Tier overview
-| Tier | Type              | Schedule | Sources                                                      |
-|------|-------------------|----------|--------------------------------------------------------------|
-| 1    | Manual seed       | Once     | `data/seed/programmes_seed.json` → Supabase via MCP `execute_sql` |
-| 2    | Structured feeds  | Daily    | Devpost RSS, DoraHacks API, MLH iCal                         |
-| 3    | Playwright scrape | Weekly   | LFX Mentorship, GSoC, Outreachy, Hyperledger, LFN, Open Mainframe |
-| 4    | Discovery         | Daily    | Google Custom Search API (10–15 queries/day, free tier)      |
+| Tier | Type              | Schedule | Runtime | Sources                                                      |
+|------|-------------------|----------|---------|--------------------------------------------------------------|
+| 1    | Manual seed       | Once     | MCP     | `data/seed/programmes_seed.json` → Supabase via MCP `execute_sql` |
+| 2    | Structured feeds  | Daily    | Edge Fn | Devpost RSS, DoraHacks API, MLH iCal (pg_cron)               |
+| 3    | Playwright scrape | Weekly   | GHA     | LFX Mentorship, GSoC, Outreachy, Hyperledger, LFN            |
+| 4    | Discovery         | Daily    | Edge Fn | Google Custom Search API (pg_cron)                           |
 
 ## Tier 1 manual seed (one-off, v0.1)
 
@@ -66,14 +66,22 @@ GOOGLE_CSE_CX=...             # Programmable Search Engine ID
 Scripts must `process.exit(1)` (Node) or `sys.exit(1)` (Python) on any Supabase write failure
 so the GitHub Actions run is marked failed and visible in the dashboard.
 
-## DoraHacks API
-Endpoint: `GET https://dorahacks.io/api/hackathon/list/`
-Returns structured JSON with `title`, `start_time`, `end_time`, `prize_pool`, `is_online`.
-Map `is_online: true` → `remote: true`. `prize_pool > 0` → `stipend_usd: prize_pool` (approximate).
+## DoraHacks (API retired — WAF + Playwright)
+
+The Django REST list API (`/api/hackathon/`) returns 404 as of 2026. DoraHacks is a Nuxt SPA behind **AWS WAF**.
+
+| Tier | Runtime | Behaviour |
+|------|---------|-----------|
+| Edge Function (daily cron) | `ingest-dorahacks` | Best-effort: tries legacy API, then HTML SSR. **Often blocked by WAF** from Supabase datacenter IPs — returns `{ ok: true, count: 0, skipped: true, reason: "waf_blocked" }` instead of 500 |
+| Playwright (weekly GHA) | `dorahacks_scrape.mjs` | **Primary source** — full listing after JS render + scroll |
+
+Send browser `User-Agent` + `Referer: https://dorahacks.io/hackathon` on all requests.
 
 ## Discovery layer (Tier 4)
-- Google Custom Search JSON API with a Programmable Search Engine configured across programme/fellowship domains
-- Daily budget: 10–15 queries (free tier cap: 100/day)
+
+- Google Custom Search JSON API with a Programmable Search Engine (`GOOGLE_CSE_API_KEY` + `GOOGLE_CSE_CX`)
+- **Access restriction (2026):** Google closed the Custom Search JSON API to **new GCP projects**. New keys return `403 PERMISSION_DENIED` ("This project does not have the access to Custom Search JSON API"). Existing customers retain access until **Jan 1, 2027**. Alternatives: Brave Search API, SerpAPI, Vertex AI Search.
+- Daily budget: 10–15 queries (free tier cap: 100/day when access is available)
 - Sample queries:
   - `"open source fellowship 2026 stipend"`
   - `"hackathon 2026 Nigeria remote"`
@@ -81,21 +89,41 @@ Map `is_online: true` → `remote: true`. `prize_pool > 0` → `stipend_usd: pri
 - Pipeline: search → deduplicate against existing `url` values → fetch + parse each new page → upsert with `source: 'custom_search'`, `reviewed: false`
 - For complex page parsing, an optional Claude API call extracts structured fields
 
+## Devpost API
+Atom feed (`hackathons.atom`) returns 406 from server-side fetchers. Use JSON API instead:
+`GET https://devpost.com/api/hackathons?status[]=open&page=N` with `Accept: application/json`.
+Returns `{ hackathons: [...], meta: { total_count } }` — 9 per page.
+
 ## scripts/ folder structure (v0.3+)
 ```
 scripts/
+  package.json
   ingest/
-    devpost_rss.mjs            # Tier 2
-    dorahacks_api.mjs          # Tier 2
-    mlh_ical.mjs               # Tier 2
     lfx_scrape.mjs             # Tier 3 (Playwright)
     gsoc_scrape.mjs            # Tier 3
     outreachy_scrape.mjs       # Tier 3
     hyperledger_scrape.mjs     # Tier 3
-  discovery/
-    custom_search.mjs          # Tier 4
-  lib/                         # shared helpers (added with Tier 2 crons)
+    lfn_scrape.mjs             # Tier 3
+    *_extract.mjs              # Pure HTML extractors (fixture-tested)
+    __fixtures__/              # HTML fixtures for extractor tests
+  lib/
     supabase_client.mjs
     nigeria_heuristic.mjs
     upsert.mjs
 ```
+
+## supabase/functions/ (Tier 2 + 4 — gitignored, deploy via CLI/MCP)
+
+```
+supabase/functions/
+  _shared/
+    supabase_admin.ts          # sole service-role reference
+    nigeria_heuristic.ts
+    upsert.ts
+  ingest-devpost/index.ts
+  ingest-dorahacks/index.ts
+  ingest-mlh/index.ts
+  ingest-custom-search/index.ts
+```
+
+Scheduled via `supabase/migrations/*_cron_jobs.sql` (pg_cron + pg_net).
