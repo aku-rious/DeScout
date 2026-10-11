@@ -3,6 +3,7 @@
 
 import "package:de_scout/src/features/admin/data/admin_repository.dart";
 import "package:de_scout/src/features/programmes/domain/programme.dart";
+import "package:de_scout/src/features/programmes/presentation/providers/programmes_provider.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 part "review_queue_provider.g.dart";
@@ -21,6 +22,7 @@ class ReviewQueue extends _$ReviewQueue {
 
   Future<void> approve(String id) async {
     await ref.read(adminRepositoryProvider).approveProgramme(id);
+    ref.invalidate(programmesProvider);
     ref.invalidateSelf();
   }
 
@@ -33,6 +35,7 @@ class ReviewQueue extends _$ReviewQueue {
     final repository = ref.read(adminRepositoryProvider);
     await repository.updateProgrammeField(id, fields);
     await repository.approveProgramme(id);
+    ref.invalidate(programmesProvider);
     ref.invalidateSelf();
   }
 }

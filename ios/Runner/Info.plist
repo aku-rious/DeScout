@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCalendarsUsageDescription</key>
+	<string>DeScout adds programme deadlines to your calendar when you tap Calendar on a programme.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>DeScout may access contacts when adding calendar events.</string>
 </dict>
 </plist>

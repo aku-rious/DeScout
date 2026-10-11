@@ -33,6 +33,18 @@ class Filter extends _$Filter {
     state = state.copyWith(status: status, clearStatus: status == null);
   }
 
+  void setTagSlug(String? slug) {
+    state = state.copyWith(tagSlug: slug, clearTagSlug: slug == null);
+  }
+
+  void setSearchQuery(String query) {
+    state = state.copyWith(searchQuery: query.trim());
+  }
+
+  void clearTag() {
+    state = state.copyWith(clearTagSlug: true);
+  }
+
   void clearAll() {
     state = const FilterState();
   }

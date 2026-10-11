@@ -8,6 +8,8 @@ abstract final class Tables {
   static const programmeTags = "programme_tags";
   static const users = "users";
   static const savedProgrammes = "saved_programmes";
+  static const exchangeRates = "exchange_rates";
+  static const programmeTips = "programme_tips";
 }
 
 /// Supabase column name constants for query builders.
@@ -34,4 +36,11 @@ abstract final class Cols {
   static const createdAt = "created_at";
   static const notificationDaysBefore = "notification_days_before";
   static const pushFlavor = "push_flavor";
+  static const currency = "currency";
+  static const ngnRate = "ngn_rate";
+  static const updatedAt = "updated_at";
+  static const tipText = "tip_text";
+  static const customReminderDays = "custom_reminder_days";
+  static const tagId = "tag_id";
+  static const slug = "slug";
 }

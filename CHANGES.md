@@ -106,3 +106,10 @@ Production Edge Function smoke tests (on Supabase project):
 **DoraHacks full catalog:** Weekly Playwright (`dorahacks_scrape.mjs` in `.github/workflows/ingest_playwright.yml`) — authoritative when Edge Function sees WAF or partial SSR.
 
 **Next:** Run `workflow_dispatch` on Tier 3 Playwright workflow; review admin queue for `reviewed = false` rows.
+
+## Detail enhancements (2026-09-02)
+
+- Schema: exchange_rates, programme_tips, saved_programmes.custom_reminder_days (Supabase MCP)
+- Edge Functions: update-exchange-rate (Frankfurter), admin_update_exchange_rate
+- pg_cron: update-exchange-rate daily 05:00 UTC
+- Flutter: enhanced detail screen, browse search/filters, admin FX tab

@@ -68,6 +68,19 @@ class SavedRemoteDataSource implements SavedRemoteDataSourceLike {
   }
 
   @override
+  Future<void> updateCustomReminderDays({
+    required String userId,
+    required String programmeId,
+    required int? days,
+  }) async {
+    await _client
+        .from(Tables.savedProgrammes)
+        .update({Cols.customReminderDays: days})
+        .eq(Cols.userId, userId)
+        .eq(Cols.programmeId, programmeId);
+  }
+
+  @override
   Future<List<SavedProgrammesRow>> fetchSavedProgrammes(String userId) async {
     final response = await _client
         .from(Tables.savedProgrammes)
@@ -150,6 +163,12 @@ abstract interface class SavedRemoteDataSourceLike {
     required String userId,
     required String programmeId,
     required String? notes,
+  });
+
+  Future<void> updateCustomReminderDays({
+    required String userId,
+    required String programmeId,
+    required int? days,
   });
 
   Future<List<SavedProgrammesRow>> fetchSavedProgrammes(String userId);

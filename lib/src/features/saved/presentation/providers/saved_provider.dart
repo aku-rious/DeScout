@@ -110,6 +110,14 @@ class SavedController extends _$SavedController {
     );
   }
 
+  Future<void> updateCustomReminderDays(String programmeId, int? days) async {
+    state = await AsyncValue.guard(
+      () => ref
+          .read(savedRepositoryProvider)
+          .updateCustomReminderDays(programmeId, days),
+    );
+  }
+
   Future<void> _maybePromptForNotifications() async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool(_notificationPromptShownKey) ?? false) {

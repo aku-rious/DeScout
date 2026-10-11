@@ -153,6 +153,7 @@ class SavedProgrammesRow {
     required this.programmeId,
     required this.applicationStatus,
     this.notes,
+    this.customReminderDays,
     required this.createdAt,
     this.programme,
   });
@@ -167,6 +168,7 @@ class SavedProgrammesRow {
         json["application_status"] as String,
       ),
       notes: json["notes"] as String?,
+      customReminderDays: json["custom_reminder_days"] as int?,
       createdAt: DateTime.parse(json["created_at"] as String),
       programme: programmeJson == null
           ? null
@@ -179,6 +181,79 @@ class SavedProgrammesRow {
   final String programmeId;
   final ApplicationStatusDb applicationStatus;
   final String? notes;
+  final int? customReminderDays;
   final DateTime createdAt;
   final ProgrammesRow? programme;
+}
+
+/// Row shape for `exchange_rates`.
+class ExchangeRatesRow {
+  const ExchangeRatesRow({
+    required this.currency,
+    required this.ngnRate,
+    required this.source,
+    required this.updatedAt,
+  });
+
+  factory ExchangeRatesRow.fromJson(Json json) {
+    return ExchangeRatesRow(
+      currency: json["currency"] as String,
+      ngnRate: (json["ngn_rate"] as num).toDouble(),
+      source: json["source"] as String,
+      updatedAt: DateTime.parse(json["updated_at"] as String),
+    );
+  }
+
+  final String currency;
+  final double ngnRate;
+  final String source;
+  final DateTime updatedAt;
+}
+
+/// Row shape for `tags`.
+class TagsRow {
+  const TagsRow({
+    required this.id,
+    required this.name,
+    required this.slug,
+  });
+
+  factory TagsRow.fromJson(Json json) {
+    return TagsRow(
+      id: json["id"] as String,
+      name: json["name"] as String,
+      slug: json["slug"] as String,
+    );
+  }
+
+  final String id;
+  final String name;
+  final String slug;
+}
+
+/// Row shape for `programme_tips`.
+class ProgrammeTipsRow {
+  const ProgrammeTipsRow({
+    required this.id,
+    required this.programmeId,
+    required this.userId,
+    required this.tipText,
+    required this.createdAt,
+  });
+
+  factory ProgrammeTipsRow.fromJson(Json json) {
+    return ProgrammeTipsRow(
+      id: json["id"] as String,
+      programmeId: json["programme_id"] as String,
+      userId: json["user_id"] as String,
+      tipText: json["tip_text"] as String,
+      createdAt: DateTime.parse(json["created_at"] as String),
+    );
+  }
+
+  final String id;
+  final String programmeId;
+  final String userId;
+  final String tipText;
+  final DateTime createdAt;
 }

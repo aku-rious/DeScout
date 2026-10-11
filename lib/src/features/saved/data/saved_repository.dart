@@ -83,6 +83,20 @@ class SavedRepository {
     );
   }
 
+  Future<void> updateCustomReminderDays(String programmeId, int? days) {
+    return _errors.guard(
+      userMessage: ErrorMapper.savedMessage,
+      action: () async {
+        final userId = _requireUserId();
+        await _remote.updateCustomReminderDays(
+          userId: userId,
+          programmeId: programmeId,
+          days: days,
+        );
+      },
+    );
+  }
+
   Stream<List<SavedProgramme>> watchSavedProgrammes() {
     final userId = _currentUserId();
     if (userId == null) {

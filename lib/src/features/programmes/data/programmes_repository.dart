@@ -7,6 +7,7 @@ import "package:de_scout/src/core/supabase/supabase_client.dart";
 import "package:de_scout/src/features/programmes/data/programmes_remote_data_source.dart";
 import "package:de_scout/src/features/programmes/domain/filter_state.dart";
 import "package:de_scout/src/features/programmes/domain/programme.dart";
+import "package:de_scout/src/features/programmes/domain/tag.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 part "programmes_repository.g.dart";
@@ -41,6 +42,29 @@ class ProgrammesRepository {
       action: () async {
         final row = await _remote.fetchProgrammeById(id);
         return row == null ? null : Programme.fromRow(row);
+      },
+    );
+  }
+
+  Future<List<Tag>> fetchProgrammeTags(String programmeId) {
+    return _errors.guard(
+      userMessage: ErrorMapper.programmesMessage,
+      action: () => _remote.fetchProgrammeTags(programmeId),
+    );
+  }
+
+  Future<List<Programme>> fetchSimilarProgrammes(
+    String programmeId,
+    List<String> tagIds,
+  ) {
+    return _errors.guard(
+      userMessage: ErrorMapper.programmesMessage,
+      action: () async {
+        final rows = await _remote.fetchSimilarProgrammes(
+          programmeId: programmeId,
+          tagIds: tagIds,
+        );
+        return rows.map(Programme.fromRow).toList();
       },
     );
   }

@@ -50,6 +50,18 @@ class AdminRepository {
     return _updateProgramme(id: id, action: "update", fields: fields);
   }
 
+  Future<void> updateExchangeRate(double ngnRate) {
+    return _errors.guard(
+      userMessage: ErrorMapper.adminMessage,
+      action: () async {
+        final response = await _functions.invokeUpdateExchangeRate({
+          "ngn_rate": ngnRate,
+        });
+        _ensureSuccess(response);
+      },
+    );
+  }
+
   Future<void> _updateProgramme({
     required String id,
     required String action,

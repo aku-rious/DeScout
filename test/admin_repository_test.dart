@@ -97,4 +97,12 @@ class _FakeAdminFunctions implements AdminFunctionsClientLike {
     lastUpdateBody = body;
     return updateResponse!;
   }
+
+  @override
+  Future<FunctionResponse> invokeUpdateExchangeRate(
+    Map<String, dynamic> body,
+  ) async {
+    lastUpdateBody = body;
+    return updateResponse!;
+  }
 }

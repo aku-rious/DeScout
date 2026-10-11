@@ -15,6 +15,9 @@ Domain glossary and architecture decisions for automated programme ingestion (v0
 | **`upsert`** | Insert or update on `url` conflict. Never create duplicate URLs. |
 | **`nigeria_eligible`** | `true` if eligibility text matches heuristic keywords; `null` if unknown. Never `false` from ingestion. |
 | **Review queue** | Admin screen showing `reviewed = false` entries. Existing Flutter feature — ingestion feeds it. |
+| **Exchange rate** | USD→NGN row in `exchange_rates`; `source` is `'api'` (Frankfurter cron) or `'admin'` (manual override). |
+| **Community tip** | Short applicant advice (`programme_tips`), 10–280 chars; public read, auth insert own. |
+| **Custom reminder** | Per-saved-programme override of `users.notification_days_before` via `saved_programmes.custom_reminder_days`. |
 
 ## ADRs
 
