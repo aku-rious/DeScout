@@ -6,60 +6,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  scrape:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      - name: Install dependencies
-        run: npm install
-        working-directory: scripts
-
-      - name: Install Playwright Chromium
-        run: npx playwright install chromium --with-deps
-        working-directory: scripts
-
-      - name: Run script unit tests
-        run: npm test
-        working-directory: scripts
-
-      - name: Verify repository secrets
-        run: |
-          if [ -z "${{ secrets.SUPABASE_URL }}" ]; then
-            echo "::error::SUPABASE_URL repository secret is not set. Add it under Settings → Secrets and variables → Actions."
-            exit 1
-          fi
-          if [ -z "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" ]; then
-            echo "::error::SUPABASE_SERVICE_ROLE_KEY repository secret is not set."
-            exit 1
-          fi
-
-      - name: Run scrapes
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        working-directory: scripts
-        run: |
-          set +e
-          failed=0
-          run_scrape() {
-            echo "=== $1 ==="
-            if node "$1"; then
-              echo "OK $1"
-            else
-              echo "::warning::$1 failed"
-              failed=1
-            fi
-          }
-          run_scrape ingest/lfx_scrape.mjs
-          run_scrape ingest/dorahacks_scrape.mjs
-          run_scrape ingest/gsoc_scrape.mjs
-          run_scrape ingest/outreachy_scrape.mjs
-          run_scrape ingest/hyperledger_scrape.mjs
-          run_scrape ingest/lfn_scrape.mjs
-          run_scrape ingest/wemakedevs_scrape.mjs
-          exit $failed
+  tier3:
+    uses: ./.github/workflows/ingest_scrape_reusable.yml
+    secrets: inherit
