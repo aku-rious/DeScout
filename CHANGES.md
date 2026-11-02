@@ -7,7 +7,7 @@
 - **Flutter:** trust badges, verified-only filter (SharedPreferences), saved stream drops rejected joins
 - **Admin:** Curation tabs (Pending / Rejected / Exchange rate), global action lock, tag picker on verify
 - **Ingestion:** upsert strips `moderation_status`/`reviewed`; tag heuristics; WeMakeDevs scraper; DevPost description enrichment; Frankfurter FX sanity + admin override skip
-- **CI:** `flutter_test.yml`; Playwright workflow runs `npm test` before scrapes; per-scraper tolerance + wemakedevs
+- **CI:** `flutter_test.yml` (committed `lib/**/*.g.dart` so CI skips slow codegen); Playwright workflow runs `npm test` before scrapes; per-scraper tolerance + wemakedevs
 - **Deploy:** redeploy `admin_fetch_unreviewed`, `admin_update_programme`, `update-exchange-rate`, Tier-2 ingest functions after migration
 
 ## OneSignal Milestone 1b (2026-10-12)

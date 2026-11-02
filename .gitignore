@@ -60,6 +60,7 @@ unlinked.ds
 unlinked_spec.ds
 *.freezed.dart
 *.g.dart
+!lib/**/*.g.dart
 # Symbolication related
 app.*.symbols
 
