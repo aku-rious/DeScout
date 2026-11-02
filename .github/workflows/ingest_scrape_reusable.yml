@@ -1,4 +1,4 @@
-# Reusable Tier 3 scrape job — called from schedule, dispatch, and manual verify workflow.
+# Reusable Tier 3 scrape job — called from the weekly scheduled workflow.
 name: Tier 3 Playwright Scrape (reusable)
 
 on:

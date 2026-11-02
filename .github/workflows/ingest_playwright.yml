@@ -1,9 +1,14 @@
+# Automated Tier 3 ingestion — Mondays 08:00 UTC only (no workflow_dispatch; dispatch on this
+# workflow id was stuck queued with zero jobs on GitHub's side).
 name: Tier 3 Playwright Scrape
 
 on:
   schedule:
     - cron: "0 8 * * 1"
-  workflow_dispatch:
+
+concurrency:
+  group: tier3-playwright-scrape
+  cancel-in-progress: false
 
 jobs:
   tier3:

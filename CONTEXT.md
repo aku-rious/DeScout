@@ -94,4 +94,4 @@ Google closed the Custom Search JSON API to new GCP customers (sunset Jan 1, 202
 | `upsertProgramme(data)` | `_shared/upsert.ts` | `lib/upsert.mjs` |
 | Feed mappers | per-function `*_test.ts` + fixtures | per-scraper `extractEntries(html)` + fixtures |
 
-Live HTTP fetches and real Supabase writes are validated manually or via `workflow_dispatch`.
+Live HTTP fetches and real Supabase writes are validated locally (`scripts/ingest/`) or by the weekly Tier 3 GitHub Actions cron (Mondays 08:00 UTC).
