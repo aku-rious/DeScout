@@ -120,7 +120,7 @@ Production Edge Function smoke tests (on Supabase project):
 
 **DoraHacks full catalog:** Weekly Playwright (`dorahacks_scrape.mjs` in `.github/workflows/ingest_playwright.yml`) — authoritative when Edge Function sees WAF or partial SSR.
 
-**Next:** Run `workflow_dispatch` on Tier 3 Playwright workflow; review admin queue for `reviewed = false` rows.
+**Next:** Tier 3 runs on GitHub cron only (Mon 08:00 UTC); local verify via `scripts/ingest/*.mjs` with service role env.
 
 ## Detail enhancements (2026-09-02)
 

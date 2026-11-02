@@ -209,7 +209,8 @@ flutter build apk --flavor huawei   -t lib/main_huawei.dart   --release
   build_standard.yml        # on push to main: build standard APK, upload artifact
   build_fdroid.yml          # on release tag: build fdroid APK
   build_huawei.yml          # on release tag: build huawei APK
-  ingest_playwright.yml     # cron Mon 08:00 UTC + workflow_dispatch: Tier 3 Playwright scrapes
+  ingest_playwright.yml     # cron Mon 08:00 UTC → ingest_scrape_reusable.yml (Tier 3 Playwright)
+  ingest_scrape_reusable.yml # workflow_call: shared scrape job
   sync_yaml_to_db.yml       # on push to main (data/ path): sync data/programmes.yaml → Supabase
 ```
 
