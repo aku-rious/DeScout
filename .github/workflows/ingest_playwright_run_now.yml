@@ -1,0 +1,11 @@
+# Manual verify entry point. Use this if "Tier 3 Playwright Scrape" dispatch stays queued with 0 jobs
+# (GitHub Actions control-plane bug — see https://github.com/actions/runner/issues/3872).
+name: Tier 3 Playwright Scrape (run now)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  tier3:
+    uses: ./.github/workflows/ingest_scrape_reusable.yml
+    secrets: inherit
