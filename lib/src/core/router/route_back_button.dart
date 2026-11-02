@@ -29,15 +29,22 @@ class RouteBackButton extends StatelessWidget {
 
 /// AppBar with [RouteBackButton] for pushed routes outside the shell.
 class RoutedAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const RoutedAppBar({required this.title, super.key});
+  const RoutedAppBar({required this.title, this.bottom, super.key});
 
   final String title;
+  final PreferredSizeWidget? bottom;
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(
+    kToolbarHeight + (bottom?.preferredSize.height ?? 0),
+  );
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(leading: const RouteBackButton(), title: Text(title));
+    return AppBar(
+      leading: const RouteBackButton(),
+      title: Text(title),
+      bottom: bottom,
+    );
   }
 }

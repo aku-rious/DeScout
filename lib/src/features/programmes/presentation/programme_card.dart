@@ -3,6 +3,7 @@
 
 import "package:de_scout/src/features/programmes/domain/programme.dart";
 import "package:de_scout/src/features/programmes/presentation/deadline_badge.dart";
+import "package:de_scout/src/features/programmes/presentation/trust_badge.dart";
 import "package:de_scout/src/features/saved/presentation/widgets/bookmark_button.dart";
 import "package:flutter/material.dart";
 
@@ -46,6 +47,8 @@ class ProgrammeCard extends StatelessWidget {
                   DeadlineBadge(closesAt: programme.closesAt),
                 ],
               ),
+              const SizedBox(height: 8),
+              TrustBadge(programme: programme),
               const SizedBox(height: 8),
               Text(
                 _subtitle(programme, stipend),

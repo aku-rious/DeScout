@@ -5,8 +5,17 @@ import "dart:async";
 
 import "package:de_scout/src/core/errors/error_mapper.dart";
 import "package:de_scout/src/core/widgets/async_error_view.dart";
+import "package:de_scout/src/features/programmes/presentation/application_window_section.dart";
+import "package:de_scout/src/features/programmes/presentation/community_tips_section.dart";
 import "package:de_scout/src/features/programmes/presentation/deadline_badge.dart";
+import "package:de_scout/src/features/programmes/presentation/detail_quick_actions.dart";
+import "package:de_scout/src/features/programmes/presentation/eligibility_badges_row.dart";
+import "package:de_scout/src/features/programmes/presentation/programme_tags_section.dart";
+import "package:de_scout/src/features/programmes/presentation/providers/programme_tips_provider.dart";
 import "package:de_scout/src/features/programmes/presentation/providers/programmes_provider.dart";
+import "package:de_scout/src/features/programmes/presentation/similar_programmes_row.dart";
+import "package:de_scout/src/features/programmes/presentation/stipend_card.dart";
+import "package:de_scout/src/features/programmes/presentation/trust_badge.dart";
 import "package:de_scout/src/features/saved/domain/application_status.dart";
 import "package:de_scout/src/features/saved/presentation/providers/saved_provider.dart";
 import "package:de_scout/src/features/saved/presentation/widgets/bookmark_button.dart";
@@ -32,6 +41,13 @@ class ProgrammeDetailScreen extends ConsumerWidget {
           if (programme == null) {
             return const Center(child: Text("Programme not found."));
           }
+
+          final tagsAsync = ref.watch(programmeTagsProvider(id));
+          final tagIds = tagsAsync.valueOrNull?.map((t) => t.id).toList() ?? [];
+          final similarAsync = ref.watch(
+            similarProgrammesProvider(id, tagIds),
+          );
+
           return CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -51,6 +67,8 @@ class ProgrammeDetailScreen extends ConsumerWidget {
                       closesAt: programme.closesAt,
                       nullLabel: "Deadline TBA",
                     ),
+                    const SizedBox(height: 8),
+                    TrustBadge(programme: programme),
                     const SizedBox(height: 16),
                     if (programme.description != null)
                       Text(programme.description!, style: textTheme.bodyLarge),
@@ -60,13 +78,47 @@ class ProgrammeDetailScreen extends ConsumerWidget {
                         programme.type.name,
                         if (programme.remote == true) "Remote",
                         if (programme.nigeriaEligible == true) "NG eligible",
-                        if (programme.stipendUsd != null)
-                          "\$${programme.stipendUsd!.toStringAsFixed(0)} stipend",
                       ].join(" · "),
                       style: textTheme.bodyMedium?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
                     ),
+                    const SizedBox(height: 24),
+                    if (programme.stipendUsd != null) ...[
+                      StipendCard(stipendUsd: programme.stipendUsd!),
+                      const SizedBox(height: 16),
+                    ],
+                    if (programme.opensAt != null && programme.closesAt != null)
+                      ApplicationWindowSection(
+                        opensAt: programme.opensAt!,
+                        closesAt: programme.closesAt!,
+                      )
+                    else if (programme.closesAt != null)
+                      ClosesOnlySection(closesAt: programme.closesAt!),
+                    if (programme.opensAt != null || programme.closesAt != null)
+                      const SizedBox(height: 16),
+                    EligibilityBadgesRow(
+                      remote: programme.remote,
+                      nigeriaEligible: programme.nigeriaEligible,
+                    ),
+                    const SizedBox(height: 16),
+                    tagsAsync.when(
+                      data: (tags) => ProgrammeTagsSection(tags: tags),
+                      loading: () => const SizedBox.shrink(),
+                      error: (_, _) => const SizedBox.shrink(),
+                    ),
+                    const SizedBox(height: 16),
+                    DetailQuickActions(programme: programme),
+                    const SizedBox(height: 24),
+                    similarAsync.when(
+                      data: (similar) => SimilarProgrammesRow(
+                        programmes: similar,
+                      ),
+                      loading: () => const SizedBox.shrink(),
+                      error: (_, _) => const SizedBox.shrink(),
+                    ),
+                    const SizedBox(height: 24),
+                    CommunityTipsSection(programmeId: id),
                     const SizedBox(height: 24),
                     _SavedProgrammeControls(programmeId: id),
                     const SizedBox(height: 24),

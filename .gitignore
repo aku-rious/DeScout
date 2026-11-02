@@ -60,6 +60,7 @@ unlinked.ds
 unlinked_spec.ds
 *.freezed.dart
 *.g.dart
+!lib/**/*.g.dart
 # Symbolication related
 app.*.symbols
 
@@ -187,4 +188,6 @@ supabase/migrations/
 supabase/seed.sql
 supabase/functions/
 supabase/DEPLOY.md
-supabase/
+./supabase/
+.cursor/mcp.json
+.mcp.json

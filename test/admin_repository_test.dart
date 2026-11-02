@@ -6,6 +6,7 @@ import "package:de_scout/src/core/errors/error_mapper.dart";
 import "package:de_scout/src/core/errors/error_reporter.dart";
 import "package:de_scout/src/features/admin/data/admin_functions_client.dart";
 import "package:de_scout/src/features/admin/data/admin_repository.dart";
+import "package:de_scout/src/features/admin/domain/curation_queue_status.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:supabase_flutter/supabase_flutter.dart";
 import "package:talker/talker.dart";
@@ -20,7 +21,7 @@ void main() {
       repository = AdminRepository(functions, ErrorReporter(Talker()));
     });
 
-    test("fetchUnreviewedProgrammes parses invoke response", () async {
+    test("fetchProgrammesForCuration parses invoke response", () async {
       functions.fetchResponse = FunctionResponse(
         status: 200,
         data: [
@@ -31,7 +32,7 @@ void main() {
             "type": "hackathon",
             "status": "unknown",
             "source": "community",
-            "reviewed": false,
+            "moderation_status": "pending",
             "is_admin_submitted": false,
             "created_at": "2026-01-01T00:00:00.000Z",
             "updated_at": "2026-01-01T00:00:00.000Z",
@@ -39,23 +40,24 @@ void main() {
         ],
       );
 
-      final programmes = await repository.fetchUnreviewedProgrammes();
+      final programmes = await repository.fetchProgrammesForCuration(
+        CurationQueueStatus.pending,
+      );
 
-      expect(functions.lastFetchInvoke, "admin_fetch_unreviewed");
+      expect(functions.lastFetchStatus, "pending");
       expect(programmes, hasLength(1));
       expect(programmes.first.name, "Pending Hack");
-      expect(programmes.first.source, "community");
     });
 
-    test("approveProgramme sends approve action", () async {
+    test("verifyProgramme sends verify action", () async {
       functions.updateResponse = FunctionResponse(
         status: 200,
         data: {"ok": true},
       );
 
-      await repository.approveProgramme("prog-1");
+      await repository.verifyProgramme("prog-1");
 
-      expect(functions.lastUpdateBody, {"id": "prog-1", "action": "approve"});
+      expect(functions.lastUpdateBody, {"id": "prog-1", "action": "verify"});
     });
 
     test("maps 403 from edge function to admin access message", () async {
@@ -65,7 +67,7 @@ void main() {
       );
 
       await expectLater(
-        repository.fetchUnreviewedProgrammes(),
+        repository.fetchProgrammesForCuration(CurationQueueStatus.pending),
         throwsA(
           isA<DeScoutException>().having(
             (e) => e.userMessage,
@@ -79,15 +81,15 @@ void main() {
 }
 
 class _FakeAdminFunctions implements AdminFunctionsClientLike {
-  FunctionResponse? fetchResponse;
-  FunctionResponse? updateResponse;
-  String? lastFetchInvoke;
+  FunctionResponse fetchResponse = FunctionResponse(status: 200, data: []);
+  FunctionResponse updateResponse = FunctionResponse(status: 200, data: {});
+  String? lastFetchStatus;
   Map<String, dynamic>? lastUpdateBody;
 
   @override
-  Future<FunctionResponse> invokeFetchUnreviewed() async {
-    lastFetchInvoke = "admin_fetch_unreviewed";
-    return fetchResponse!;
+  Future<FunctionResponse> invokeFetchCurationQueue(String status) async {
+    lastFetchStatus = status;
+    return fetchResponse;
   }
 
   @override
@@ -95,6 +97,13 @@ class _FakeAdminFunctions implements AdminFunctionsClientLike {
     Map<String, dynamic> body,
   ) async {
     lastUpdateBody = body;
-    return updateResponse!;
+    return updateResponse;
+  }
+
+  @override
+  Future<FunctionResponse> invokeUpdateExchangeRate(
+    Map<String, dynamic> body,
+  ) async {
+    return FunctionResponse(status: 200, data: {"ok": true});
   }
 }

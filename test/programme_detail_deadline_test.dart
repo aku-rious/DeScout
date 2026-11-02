@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import "package:de_scout/src/features/auth/presentation/providers/auth_provider.dart";
+import "package:de_scout/src/features/programmes/domain/moderation_status.dart";
 import "package:de_scout/src/features/programmes/domain/programme.dart";
 import "package:de_scout/src/features/programmes/domain/programme_status.dart";
 import "package:de_scout/src/features/programmes/domain/programme_type.dart";
@@ -24,6 +25,7 @@ void main() {
       type: ProgrammeType.fellowship,
       status: ProgrammeStatus.open,
       source: "manual",
+      moderationStatus: ModerationStatus.adminVerified,
       closesAt: null,
     );
 

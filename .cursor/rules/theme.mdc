@@ -57,3 +57,12 @@ DeadlineState classifyDeadline(DateTime? closesAt) { ... }
 | Stipend amount            | `titleSmall`    |
 | Section labels            | `labelMedium`   |
 | Detail screen body        | `bodyLarge`     |
+
+## Trust badge (programme cards + detail)
+| Trust level | Widget | Colours |
+|-------------|--------|---------|
+| Admin verified | `Chip` + `Icons.verified_outlined` | `primaryContainer` / `onPrimaryContainer` |
+| Community-sourced (pending) | `Chip` + `Icons.groups_outlined`, label “Community-sourced · unverified” | `surfaceContainerHighest`, `outline` border, `onSurfaceVariant` text — never error colours |
+| Ingestion / source pending | *(no chip)* | — |
+
+Only use “Verified” when `moderation_status` is `admin_verified`.

@@ -22,14 +22,15 @@ not anon key):
 1. `DELETE FROM programmes WHERE source = 'manual';`
 2. `INSERT INTO programmes (...) VALUES ... ON CONFLICT (url) DO UPDATE SET ...` from JSON rows
 
-Tier-1 rows MAY set `reviewed: true` (human-curated, pre-approved). No `scripts/seed/` upload
-script is kept in-repo after the initial v0.1 seed.
+Tier-1 seed via `scripts/seed/upload_seed.mjs` MAY set `moderation_status: 'admin_verified'`.
+Do not re-run that script after live moderation has started.
 
 ## Mandatory fields on every upserted row (Tier 2–4)
 ```json
-{ "name": "...", "url": "...", "type": "...", "source": "...", "reviewed": false }
+{ "name": "...", "url": "...", "type": "...", "source": "..." }
 ```
-`reviewed` MUST be `false` from Tier 2–4 ingestion scripts. Admin approves in-app.
+Never include `moderation_status` or `reviewed` in an upsert payload. New rows default to
+`pending`; existing rows keep their status. Admin verifies in-app.
 
 ## Upsert key
 Upsert on `url` (unique constraint). On conflict, update `updated_at` and any changed fields.
@@ -47,6 +48,7 @@ Never insert a duplicate URL.
 | Outreachy Playwright    | `playwright_outreachy`  |
 | Hyperledger Playwright  | `playwright_hyperledger`|
 | LFN Playwright          | `playwright_lfn`        |
+| WeMakeDevs Playwright   | `playwright_wemakedevs` |
 | DoraHacks Playwright    | `dorahacks_api`         |
 | Custom Search discovery | `custom_search`         |
 
@@ -90,7 +92,7 @@ When operational:
   - `"open source fellowship 2026 stipend"`
   - `"hackathon 2026 Nigeria remote"`
   - `"developer programme 2026 application open"`
-- Pipeline: search → deduplicate against existing `url` values → fetch + parse each new page → upsert with `source: 'custom_search'`, `reviewed: false`
+- Pipeline: search → deduplicate against existing `url` values → fetch + parse each new page → upsert with `source: 'custom_search'` (no moderation_status in payload)
 - For complex page parsing, an optional Claude API call extracts structured fields
 
 ## Devpost API

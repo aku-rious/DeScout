@@ -12,6 +12,9 @@ class FilterState {
     this.nigeriaEligibleOnly = false,
     this.paidOnly = false,
     this.status,
+    this.tagSlug,
+    this.searchQuery = "",
+    this.verifiedOnly = false,
   });
 
   final ProgrammeType? type;
@@ -19,6 +22,9 @@ class FilterState {
   final bool nigeriaEligibleOnly;
   final bool paidOnly;
   final ProgrammeStatus? status;
+  final String? tagSlug;
+  final String searchQuery;
+  final bool verifiedOnly;
 
   FilterState copyWith({
     ProgrammeType? type,
@@ -26,8 +32,12 @@ class FilterState {
     bool? nigeriaEligibleOnly,
     bool? paidOnly,
     ProgrammeStatus? status,
+    String? tagSlug,
+    String? searchQuery,
+    bool? verifiedOnly,
     bool clearType = false,
     bool clearStatus = false,
+    bool clearTagSlug = false,
   }) {
     return FilterState(
       type: clearType ? null : (type ?? this.type),
@@ -35,6 +45,9 @@ class FilterState {
       nigeriaEligibleOnly: nigeriaEligibleOnly ?? this.nigeriaEligibleOnly,
       paidOnly: paidOnly ?? this.paidOnly,
       status: clearStatus ? null : (status ?? this.status),
+      tagSlug: clearTagSlug ? null : (tagSlug ?? this.tagSlug),
+      searchQuery: searchQuery ?? this.searchQuery,
+      verifiedOnly: verifiedOnly ?? this.verifiedOnly,
     );
   }
 
@@ -43,5 +56,8 @@ class FilterState {
       remoteOnly ||
       nigeriaEligibleOnly ||
       paidOnly ||
-      status != null;
+      status != null ||
+      tagSlug != null ||
+      searchQuery.isNotEmpty ||
+      verifiedOnly;
 }

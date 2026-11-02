@@ -36,7 +36,7 @@ Cold-start community: TechCabal Slack, Forloop, DevCareer.
 
 ## Hard constraints — never violate
 1. Licence is AGPL-3.0. Every new Dart file gets the AGPL header (see conventions.mdc).
-2. All `programmes` reads in the app MUST include `.eq('reviewed', true)`. Never show unreviewed entries.
+2. Every `programmes` read in the app excludes rejected rows: `.neq('moderation_status','rejected')`. Verified-only mode uses `.eq('moderation_status','admin_verified')`. Ingestion never writes `moderation_status`; only admin Edge Functions change it.
 3. Supabase service role key NEVER appears in Flutter code — cron scripts only.
 4. All ThemeData decisions live in `lib/src/core/theme/app_theme.dart`. No inline ThemeData in widgets.
 5. No business logic in `build()` methods. Providers own all state and async calls.

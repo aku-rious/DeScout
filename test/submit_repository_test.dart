@@ -48,7 +48,7 @@ void main() {
       expect(remote.lastInsert, isNull);
     });
 
-    test("inserts unreviewed community row for authenticated user", () async {
+    test("inserts pending community row for authenticated user", () async {
       remote.currentUserId = "user-1";
 
       await repository.submitProgramme(
@@ -64,7 +64,6 @@ void main() {
         "name": "Test Hack",
         "url": "https://example.com/hack",
         "type": "hackathon",
-        "reviewed": false,
         "source": "community",
         "contributor_id": "user-1",
         "status": "unknown",

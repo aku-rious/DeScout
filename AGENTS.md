@@ -29,7 +29,7 @@ DeScout is a Flutter mobile app that aggregates remote, paid, Nigeria-eligible h
 5. **Never** add Supabase queries to widgets — all calls live in `*_repository.dart`.
 6. Use `Tables`/`Cols` from `table_names.dart` **and** generated types from `database_types.dart` — no raw table/column strings.
 7. No business logic in widgets. One public widget per file.
-8. All `programmes` reads MUST include `.eq(Cols.reviewed, true)`.
+8. All `programmes` reads MUST exclude rejected: `.neq(Cols.moderationStatus, ModerationStatus.rejected.dbValue)` (optional verified-only filter).
 9. Theme decisions live in `lib/src/core/theme/app_theme.dart` (wraps `lib/theme.dart` — do not edit `theme.dart`).
 10. Use **double quotes** for strings (`prefer_double_quotes` lint).
 11. **Errors:** repositories use `ErrorReporter.guard`; UI shows `ErrorMapper.userMessage` only. Talker for dev/admin diagnostics.

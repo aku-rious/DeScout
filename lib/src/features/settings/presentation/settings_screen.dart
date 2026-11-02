@@ -3,8 +3,10 @@
 
 import "package:de_scout/src/core/errors/error_mapper.dart";
 import "package:de_scout/src/core/notifications/notification_service.dart";
+import "package:de_scout/src/core/notifications/onesignal_notification_service.dart";
 import "package:de_scout/src/core/router/routes.dart";
 import "package:de_scout/src/features/auth/presentation/providers/auth_provider.dart";
+import "package:de_scout/src/features/programmes/presentation/providers/filter_provider.dart";
 import "package:de_scout/src/features/settings/presentation/providers/settings_provider.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -25,6 +27,7 @@ class SettingsScreen extends ConsumerWidget {
     final notificationService = ref.watch(notificationServiceProvider);
     final daysAsync = ref.watch(notificationDaysBeforeProvider);
     final permissionAsync = ref.watch(notificationPermissionGrantedProvider);
+    final filters = ref.watch(filterProvider);
 
     ref.listen(notificationDaysBeforeProvider, (previous, next) {
       if (previous?.isLoading != true || next.isLoading) {
@@ -101,6 +104,11 @@ class SettingsScreen extends ConsumerWidget {
                       "Get deadline reminders for saved programmes",
                     ),
                     onTap: () async {
+                      if (OneSignalNotificationService
+                              .usesDevVerificationFlow &&
+                          notificationService is OneSignalNotificationService) {
+                        return;
+                      }
                       await notificationService.promptForPermission();
                       ref.invalidate(notificationPermissionGrantedProvider);
                     },
@@ -111,6 +119,14 @@ class SettingsScreen extends ConsumerWidget {
               ),
           ],
           const SizedBox(height: 8),
+          SwitchListTile(
+            secondary: const Icon(Icons.verified_outlined),
+            title: const Text("Verified only"),
+            subtitle: const Text("Browse admin-verified programmes only"),
+            value: filters.verifiedOnly,
+            onChanged: (_) =>
+                ref.read(filterProvider.notifier).toggleVerifiedOnly(),
+          ),
           ListTile(
             leading: const Icon(Icons.add_circle_outline),
             title: const Text("Submit a programme"),
@@ -120,8 +136,8 @@ class SettingsScreen extends ConsumerWidget {
           if (isAdmin)
             ListTile(
               leading: const Icon(Icons.fact_check_outlined),
-              title: const Text("Review queue"),
-              subtitle: const Text("Approve community submissions"),
+              title: const Text("Curation"),
+              subtitle: const Text("Verify or reject programmes"),
               onTap: () => context.push(Routes.adminReview),
             ),
           FilledButton.tonal(

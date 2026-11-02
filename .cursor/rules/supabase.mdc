@@ -22,25 +22,28 @@ Use `--dart-define=DESCOUT_SUPABASE_URL=...` at build time. Never hardcode crede
 - Commit the generated file. Cursor reads it to avoid hallucinating column names.
 - Never construct raw `Map<String, dynamic>` for inserts — use typed fromJson/toJson on domain models.
 
-## The reviewed=true rule — CRITICAL
-Every query against `programmes` in the Flutter app MUST include:
+## Moderation visibility — CRITICAL
+Every query against `programmes` in the Flutter app MUST exclude rejected rows:
 ```dart
-.eq('reviewed', true)
+.neq(Cols.moderationStatus, ModerationStatus.rejected.dbValue)
 ```
-No exceptions. Unreviewed entries are visible only in the admin review queue screen.
-The admin screen uses the service role via a Supabase Edge Function — never in the Flutter client directly.
+Optional browse filter: `.eq(Cols.moderationStatus, ModerationStatus.adminVerified.dbValue)`.
+Admin curation lists use Edge Functions with the service role — never in the Flutter client directly.
 
 ## Repository pattern
 ```dart
-// Always scope to reviewed=true; always catch PostgrestException
-Future<List<Programme>> fetchOpenProgrammes() async {
+// Exclude rejected; optionally admin_verified only; catch PostgrestException
+Future<List<Programme>> fetchOpenProgrammes(FilterState filters) async {
   try {
-    final response = await Supabase.instance.client
+    var query = Supabase.instance.client
         .from('programmes')
         .select()
-        .eq('reviewed', true)
-        .neq('status', 'closed')
-        .order('closes_at', ascending: true);
+        .neq('moderation_status', 'rejected')
+        .neq('status', 'closed');
+    if (filters.verifiedOnly) {
+      query = query.eq('moderation_status', 'admin_verified');
+    }
+    final response = await query.order('closes_at', ascending: true);
     return (response as List).map(Programme.fromJson).toList();
   } on PostgrestException catch (e) {
     throw ProgrammesException(e.message);

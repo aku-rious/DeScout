@@ -6,15 +6,18 @@ Domain glossary and architecture decisions for automated programme ingestion (v0
 
 | Term | Meaning |
 |------|---------|
-| **Tier 1** | One-off manual seed from `data/seed/programmes_seed.json` via Supabase MCP. May set `reviewed: true`. |
+| **Tier 1** | One-off manual seed from `data/seed/programmes_seed.json` via `scripts/seed/upload_seed.mjs` or MCP. May set `moderation_status: admin_verified`. |
 | **Tier 2** | Structured feeds (Devpost JSON API, DoraHacks HTML SSR, MLH iCal) via **Supabase Edge Functions** invoked daily by **pg_cron**. |
 | **Tier 3** | Playwright browser scrapes (LFX, GSoC, Outreachy, Hyperledger, LFN, DoraHacks) via **GitHub Actions** weekly. |
 | **Tier 4** | Programme discovery via **Edge Function** (`ingest-custom-search`). **Deferred** on project — Google CSE blocked for new GCP projects. |
-| **`reviewed`** | `false` on every Tier 2–4 upsert. Admin sets `true` in the review queue. Never set `true` from ingestion. |
+| **`moderation_status`** | `pending` (default), `admin_verified`, or `rejected`. Ingestion never writes it; admin Edge Functions verify/reject/restore. |
 | **`source`** | Provenance tag on `programmes`. Must match values in `.cursor/rules/ingestion.mdc` exactly. |
 | **`upsert`** | Insert or update on `url` conflict. Never create duplicate URLs. |
 | **`nigeria_eligible`** | `true` if eligibility text matches heuristic keywords; `null` if unknown. Never `false` from ingestion. |
-| **Review queue** | Admin screen showing `reviewed = false` entries. Existing Flutter feature — ingestion feeds it. |
+| **Curation** | Admin screen (Pending / Rejected tabs) for verify, reject, restore. Public users see non-rejected listings with trust badges. |
+| **Exchange rate** | USD→NGN row in `exchange_rates`; `source` is `'api'` (Frankfurter cron) or `'admin'` (manual override). |
+| **Community tip** | Short applicant advice (`programme_tips`), 10–280 chars; public read, auth insert own. |
+| **Custom reminder** | Per-saved-programme override of `users.notification_days_before` via `saved_programmes.custom_reminder_days`. |
 
 ## ADRs
 

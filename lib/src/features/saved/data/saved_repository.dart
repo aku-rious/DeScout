@@ -8,6 +8,7 @@ import "package:de_scout/src/core/errors/error_mapper.dart";
 import "package:de_scout/src/core/errors/error_reporter.dart";
 import "package:de_scout/src/core/supabase/supabase_client.dart";
 import "package:de_scout/src/features/saved/data/saved_remote_data_source.dart";
+import "package:de_scout/src/features/programmes/domain/moderation_status.dart";
 import "package:de_scout/src/features/saved/domain/application_status.dart";
 import "package:de_scout/src/features/saved/domain/saved_programme.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
@@ -83,15 +84,38 @@ class SavedRepository {
     );
   }
 
+  Future<void> updateCustomReminderDays(String programmeId, int? days) {
+    return _errors.guard(
+      userMessage: ErrorMapper.savedMessage,
+      action: () async {
+        final userId = _requireUserId();
+        await _remote.updateCustomReminderDays(
+          userId: userId,
+          programmeId: programmeId,
+          days: days,
+        );
+      },
+    );
+  }
+
   Stream<List<SavedProgramme>> watchSavedProgrammes() {
     final userId = _currentUserId();
     if (userId == null) {
       return Stream.value([]);
     }
 
-    return _remote
-        .watchSavedProgrammes(userId)
-        .map((rows) => rows.map(SavedProgramme.fromRow).toList());
+    return _remote.watchSavedProgrammes(userId).map((rows) {
+      return rows
+          .map(SavedProgramme.fromRow)
+          .where((saved) {
+            final programme = saved.programme;
+            if (programme == null) {
+              return false;
+            }
+            return programme.moderationStatus != ModerationStatus.rejected;
+          })
+          .toList();
+    });
   }
 
   String _requireUserId() {

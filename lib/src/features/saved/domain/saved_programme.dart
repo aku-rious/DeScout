@@ -14,6 +14,7 @@ class SavedProgramme {
     this.programme,
     required this.applicationStatus,
     this.notes,
+    this.customReminderDays,
     required this.createdAt,
   });
 
@@ -27,6 +28,7 @@ class SavedProgramme {
           : Programme.fromRow(row.programme!),
       applicationStatus: ApplicationStatus.fromDb(row.applicationStatus),
       notes: row.notes,
+      customReminderDays: row.customReminderDays,
       createdAt: row.createdAt,
     );
   }
@@ -37,6 +39,7 @@ class SavedProgramme {
   final Programme? programme;
   final ApplicationStatus applicationStatus;
   final String? notes;
+  final int? customReminderDays;
   final DateTime createdAt;
 
   bool get isAvailable => programme != null;

@@ -1,5 +1,20 @@
 # Changelog
 
+## Moderation + Curation (Milestone 1 — 2026-10-12)
+
+- **DB:** `supabase/migrations/20261012000000_moderation_status.sql`, `20261012000001_seed_tags.sql` — apply via Supabase CLI/MCP before shipping app build
+- **`moderation_status`** replaces `reviewed`; rejected rows are tombstones (no delete on reject)
+- **Flutter:** trust badges, verified-only filter (SharedPreferences), saved stream drops rejected joins
+- **Admin:** Curation tabs (Pending / Rejected / Exchange rate), global action lock, tag picker on verify
+- **Ingestion:** upsert strips `moderation_status`/`reviewed`; tag heuristics; WeMakeDevs scraper; DevPost description enrichment; Frankfurter FX sanity + admin override skip
+- **CI:** `flutter_test.yml` (committed `lib/**/*.g.dart` so CI skips slow codegen); Playwright workflow runs `npm test` before scrapes; per-scraper tolerance + wemakedevs
+- **Deploy:** redeploy `admin_fetch_unreviewed`, `admin_update_programme`, `update-exchange-rate`, Tier-2 ingest functions after migration
+
+## OneSignal Milestone 1b (2026-10-12)
+
+- Android release `INTERNET`; OneSignal login/logout on auth; debug/profile verification dialog
+- `ios/Runner/Runner.entitlements` + App Group — **manual:** add NSE target `OneSignalNotificationServiceExtension` in Xcode (see OneSignal Flutter setup)
+
 ## v0.1 scaffold (2026-07-18)
 
 - Feature-first `lib/src/` folder tree with placeholder files per ARCHITECTURE.md
@@ -76,7 +91,7 @@ GitHub slices: [#9](https://github.com/aku-rious/DeScout/issues/9)–[#15](https
 - **pg_cron**: `supabase/migrations/20260809000000_cron_jobs.sql` — daily 06:00–07:00 UTC
 - **Tier 3 Playwright**: `scripts/ingest/` (LFX, GSoC, Outreachy, Hyperledger, LFN) + fixture-tested extractors
 - **GitHub Actions**: `.github/workflows/ingest_playwright.yml` — Mondays 08:00 UTC
-- All Tier 2–4 upserts force `reviewed: false`; upsert on `url` conflict
+- Tier 2–4 upserts strip `reviewed` / `moderation_status`; upsert on `url` conflict
 - Node tests: `scripts/lib/*.test.mjs`, `scripts/ingest/*.test.mjs` (16 passing)
 
 **Deploy checklist (manual):**
@@ -106,3 +121,10 @@ Production Edge Function smoke tests (on Supabase project):
 **DoraHacks full catalog:** Weekly Playwright (`dorahacks_scrape.mjs` in `.github/workflows/ingest_playwright.yml`) — authoritative when Edge Function sees WAF or partial SSR.
 
 **Next:** Run `workflow_dispatch` on Tier 3 Playwright workflow; review admin queue for `reviewed = false` rows.
+
+## Detail enhancements (2026-09-02)
+
+- Schema: exchange_rates, programme_tips, saved_programmes.custom_reminder_days (Supabase MCP)
+- Edge Functions: update-exchange-rate (Frankfurter), admin_update_exchange_rate
+- pg_cron: update-exchange-rate daily 05:00 UTC
+- Flutter: enhanced detail screen, browse search/filters, admin FX tab

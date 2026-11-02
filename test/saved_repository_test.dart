@@ -29,7 +29,7 @@ void main() {
           type: ProgrammeTypeDb.fellowship,
           status: ProgrammeStatusDb.open,
           source: "seed",
-          reviewed: true,
+          moderationStatus: "admin_verified",
           isAdminSubmitted: false,
           createdAt: DateTime.utc(2026, 1, 1),
           updatedAt: DateTime.utc(2026, 1, 1),
@@ -168,6 +168,13 @@ class _FakeSavedRemote implements SavedRemoteDataSourceLike {
     required String userId,
     required String programmeId,
     required String? notes,
+  }) async {}
+
+  @override
+  Future<void> updateCustomReminderDays({
+    required String userId,
+    required String programmeId,
+    required int? days,
   }) async {}
 
   @override
