@@ -54,6 +54,12 @@ class ActiveFilterChips extends ConsumerWidget {
           label: "\"${filters.searchQuery}\"",
           onDismiss: () => ref.read(filterProvider.notifier).setSearchQuery(""),
         ),
+      if (filters.verifiedOnly)
+        _DismissChip(
+          label: "Verified only",
+          onDismiss: () =>
+              ref.read(filterProvider.notifier).toggleVerifiedOnly(),
+        ),
     ];
 
     return SingleChildScrollView(

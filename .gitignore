@@ -187,4 +187,6 @@ supabase/migrations/
 supabase/seed.sql
 supabase/functions/
 supabase/DEPLOY.md
-supabase/
+./supabase/
+.cursor/mcp.json
+.mcp.json

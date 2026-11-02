@@ -4,6 +4,7 @@
 import "dart:async";
 
 import "package:de_scout/src/core/notifications/notification_service.dart";
+import "package:de_scout/src/core/notifications/onesignal_notification_service.dart";
 import "package:de_scout/src/features/auth/presentation/providers/auth_provider.dart";
 import "package:de_scout/src/features/saved/data/saved_repository.dart";
 import "package:de_scout/src/features/saved/domain/application_status.dart";
@@ -119,6 +120,9 @@ class SavedController extends _$SavedController {
   }
 
   Future<void> _maybePromptForNotifications() async {
+    if (OneSignalNotificationService.usesDevVerificationFlow) {
+      return;
+    }
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool(_notificationPromptShownKey) ?? false) {
       return;

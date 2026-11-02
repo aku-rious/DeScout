@@ -84,6 +84,13 @@ class ProgrammesFilterSheet extends ConsumerWidget {
               );
             }).toList(),
           ),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text("Verified only"),
+            subtitle: const Text("Show admin-verified programmes only"),
+            value: filters.verifiedOnly,
+            onChanged: (_) => notifier.toggleVerifiedOnly(),
+          ),
           const SizedBox(height: 16),
           Row(
             children: [

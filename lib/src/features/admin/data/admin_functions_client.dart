@@ -5,7 +5,7 @@ import "package:supabase_flutter/supabase_flutter.dart";
 
 /// Contract for admin Edge Function invocations (testable via fake).
 abstract interface class AdminFunctionsClientLike {
-  Future<FunctionResponse> invokeFetchUnreviewed();
+  Future<FunctionResponse> invokeFetchCurationQueue(String status);
   Future<FunctionResponse> invokeUpdateProgramme(Map<String, dynamic> body);
   Future<FunctionResponse> invokeUpdateExchangeRate(Map<String, dynamic> body);
 }
@@ -21,8 +21,11 @@ class AdminFunctionsClient implements AdminFunctionsClientLike {
   static const _updateExchangeRate = "admin_update_exchange_rate";
 
   @override
-  Future<FunctionResponse> invokeFetchUnreviewed() {
-    return _client.functions.invoke(_fetchUnreviewed);
+  Future<FunctionResponse> invokeFetchCurationQueue(String status) {
+    return _client.functions.invoke(
+      _fetchUnreviewed,
+      body: {"status": status},
+    );
   }
 
   @override

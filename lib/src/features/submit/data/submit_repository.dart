@@ -45,7 +45,6 @@ class SubmitRepository {
       Cols.name: input.name,
       Cols.url: input.url,
       Cols.type: input.type.name,
-      Cols.reviewed: false,
       Cols.source: "community",
       Cols.contributorId: userId,
       Cols.status: "unknown",

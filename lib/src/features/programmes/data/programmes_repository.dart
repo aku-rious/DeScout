@@ -19,7 +19,7 @@ ProgrammesRemoteDataSource programmesRemoteDataSource(
   return ProgrammesRemoteDataSource(ref.watch(supabaseClientProvider));
 }
 
-/// Loads and maps reviewed programmes from Supabase.
+/// Loads and maps programmes from Supabase (non-rejected by default).
 class ProgrammesRepository {
   const ProgrammesRepository(this._remote, this._errors);
 

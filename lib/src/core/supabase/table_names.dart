@@ -18,7 +18,8 @@ abstract final class Cols {
   static const name = "name";
   static const url = "url";
   static const type = "type";
-  static const reviewed = "reviewed";
+  static const moderationStatus = "moderation_status";
+  static const rejectedAt = "rejected_at";
   static const closesAt = "closes_at";
   static const opensAt = "opens_at";
   static const nigeriaEligible = "nigeria_eligible";

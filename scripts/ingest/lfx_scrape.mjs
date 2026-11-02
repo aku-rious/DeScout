@@ -12,7 +12,7 @@ const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 
 try {
-  await page.goto(TARGET_URL, { waitUntil: "networkidle", timeout: 30000 });
+  await page.goto(TARGET_URL, { waitUntil: "domcontentloaded", timeout: 30000 });
   const html = await page.content();
   const entries = extractLfxEntries(html);
 
@@ -25,7 +25,6 @@ try {
         `${entry.name ?? ""} ${entry.description ?? ""}`,
       ),
       source: "playwright_lfx",
-      reviewed: false,
     });
   }
 

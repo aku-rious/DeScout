@@ -13,7 +13,7 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 
-/// Browse screen listing reviewed programmes from Supabase.
+/// Browse screen listing public programmes from Supabase.
 class ProgrammesListScreen extends ConsumerWidget {
   const ProgrammesListScreen({super.key});
 
@@ -74,9 +74,8 @@ class ProgrammesListScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: 16),
                             TextButton(
-                              onPressed: () => ref
-                                  .read(filterProvider.notifier)
-                                  .clearAll(),
+                              onPressed: () =>
+                                  ref.read(filterProvider.notifier).clearAll(),
                               child: const Text("Clear filters"),
                             ),
                           ],

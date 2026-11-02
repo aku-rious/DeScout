@@ -14,6 +14,7 @@ class FilterState {
     this.status,
     this.tagSlug,
     this.searchQuery = "",
+    this.verifiedOnly = false,
   });
 
   final ProgrammeType? type;
@@ -23,6 +24,7 @@ class FilterState {
   final ProgrammeStatus? status;
   final String? tagSlug;
   final String searchQuery;
+  final bool verifiedOnly;
 
   FilterState copyWith({
     ProgrammeType? type,
@@ -32,6 +34,7 @@ class FilterState {
     ProgrammeStatus? status,
     String? tagSlug,
     String? searchQuery,
+    bool? verifiedOnly,
     bool clearType = false,
     bool clearStatus = false,
     bool clearTagSlug = false,
@@ -44,6 +47,7 @@ class FilterState {
       status: clearStatus ? null : (status ?? this.status),
       tagSlug: clearTagSlug ? null : (tagSlug ?? this.tagSlug),
       searchQuery: searchQuery ?? this.searchQuery,
+      verifiedOnly: verifiedOnly ?? this.verifiedOnly,
     );
   }
 
@@ -54,5 +58,6 @@ class FilterState {
       paidOnly ||
       status != null ||
       tagSlug != null ||
-      searchQuery.isNotEmpty;
+      searchQuery.isNotEmpty ||
+      verifiedOnly;
 }

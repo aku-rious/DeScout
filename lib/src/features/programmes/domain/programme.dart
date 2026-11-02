@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import "package:de_scout/src/core/supabase/database_types.dart";
+import "package:de_scout/src/features/programmes/domain/moderation_status.dart";
 import "package:de_scout/src/features/programmes/domain/programme_status.dart";
 import "package:de_scout/src/features/programmes/domain/programme_type.dart";
 
-/// A reviewed hackathon, fellowship, or programme listing.
+/// A hackathon, fellowship, or programme listing.
 class Programme {
   const Programme({
     required this.id,
@@ -21,6 +22,7 @@ class Programme {
     this.closesAt,
     required this.status,
     required this.source,
+    required this.moderationStatus,
   });
 
   factory Programme.fromRow(ProgrammesRow row) {
@@ -38,6 +40,7 @@ class Programme {
       closesAt: row.closesAt,
       status: ProgrammeStatus.values.byName(row.status.name),
       source: row.source,
+      moderationStatus: ModerationStatus.fromDb(row.moderationStatus),
     );
   }
 
@@ -54,4 +57,5 @@ class Programme {
   final DateTime? closesAt;
   final ProgrammeStatus status;
   final String source;
+  final ModerationStatus moderationStatus;
 }

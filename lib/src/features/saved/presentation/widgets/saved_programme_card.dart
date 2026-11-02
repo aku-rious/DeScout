@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import "package:de_scout/src/features/programmes/presentation/deadline_badge.dart";
+import "package:de_scout/src/features/programmes/presentation/trust_badge.dart";
 import "package:de_scout/src/features/saved/domain/application_status.dart";
 import "package:de_scout/src/features/saved/domain/saved_programme.dart";
 import "package:flutter/material.dart";
@@ -48,6 +49,8 @@ class SavedProgrammeCard extends StatelessWidget {
                   DeadlineBadge(closesAt: programme.closesAt),
                 ],
               ),
+              const SizedBox(height: 8),
+              TrustBadge(programme: programme),
               if (saved.notes != null && saved.notes!.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Text(
@@ -67,7 +70,7 @@ class SavedProgrammeCard extends StatelessWidget {
   }
 }
 
-/// Placeholder when the joined programme is unavailable (unreviewed or removed).
+/// Placeholder when the joined programme is unavailable (removed or rejected).
 class UnavailableSavedCard extends StatelessWidget {
   const UnavailableSavedCard({required this.saved, super.key});
 

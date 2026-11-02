@@ -4,6 +4,7 @@
 import "package:de_scout/src/app.dart";
 import "package:de_scout/src/core/notifications/notification_service.dart";
 import "package:de_scout/src/core/notifications/onesignal_notification_service.dart";
+import "package:de_scout/src/core/notifications/onesignal_standard_lifecycle.dart";
 import "package:de_scout/src/core/supabase/supabase_init.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -28,7 +29,7 @@ Future<void> _run() async {
       overrides: [
         notificationServiceProvider.overrideWithValue(notificationService),
       ],
-      child: const DeScoutApp(),
+      child: const OneSignalStandardLifecycle(child: DeScoutApp()),
     ),
   );
 }

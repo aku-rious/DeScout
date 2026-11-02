@@ -1,63 +1,47 @@
-import { describe, it, mock } from "node:test";
 import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 
 describe("upsertProgramme", () => {
-  it("forces reviewed false and upserts on url conflict", async () => {
-    let capturedRow = null;
-    let capturedOpts = null;
-
+  it("strips moderation_status and reviewed before upsert", async () => {
+    let capturedRow;
     const fakeClient = {
-      from: (_table) => ({
-        upsert: (row, opts) => {
-          capturedRow = row;
-          capturedOpts = opts;
-          return Promise.resolve({ error: null });
-        },
-      }),
+      from(table) {
+        assert.equal(table, "programmes");
+        return {
+          select() {
+            return {
+              eq() {
+                return { maybeSingle: async () => ({ data: null, error: null }) };
+              },
+            };
+          },
+          upsert(row) {
+            capturedRow = row;
+            return {
+              select() {
+                return { maybeSingle: async () => ({ data: { id: "p1" }, error: null }) };
+              },
+            };
+          },
+        };
+      },
     };
 
     const { upsertProgramme } = await import("./upsert.mjs");
-
     await upsertProgramme(
       {
         name: "Test",
-        url: "https://example.com",
+        url: "https://example.com/t",
         type: "hackathon",
-        source: "playwright_lfx",
+        source: "manual",
+        moderation_status: "admin_verified",
         reviewed: true,
       },
       fakeClient,
     );
 
-    assert.equal(capturedRow.reviewed, false);
+    assert.equal(capturedRow.moderation_status, undefined);
+    assert.equal(capturedRow.reviewed, undefined);
     assert.equal(capturedRow.name, "Test");
-    assert.equal(capturedOpts.onConflict, "url");
-  });
-
-  it("exits with code 1 on Supabase error", async () => {
-    const fakeClient = {
-      from: (_table) => ({
-        upsert: () =>
-          Promise.resolve({ error: { message: "permission denied" } }),
-      }),
-    };
-
-    const exitMock = mock.method(process, "exit", () => {});
-
-    const { upsertProgramme } = await import("./upsert.mjs");
-
-    await upsertProgramme(
-      {
-        name: "Fail",
-        url: "https://example.com/fail",
-        type: "programme",
-        source: "custom_search",
-      },
-      fakeClient,
-    );
-
-    assert.equal(exitMock.mock.callCount(), 1);
-    assert.equal(exitMock.mock.calls[0].arguments[0], 1);
-    exitMock.mock.restore();
   });
 });

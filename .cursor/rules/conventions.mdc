@@ -80,7 +80,8 @@ abstract class Tables {
   static const savedProgrammes = 'saved_programmes';
 }
 abstract class Cols {
-  static const reviewed       = 'reviewed';
+  static const moderationStatus = 'moderation_status';
+  static const rejectedAt       = 'rejected_at';
   static const closesAt       = 'closes_at';
   static const nigeriaEligible = 'nigeria_eligible';
   // ... add as needed

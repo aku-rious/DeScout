@@ -25,7 +25,6 @@ try {
         `${entry.name ?? ""} ${entry.description ?? ""}`,
       ),
       source: "playwright_outreachy",
-      reviewed: false,
     });
   }
 

@@ -5,13 +5,27 @@ import "package:de_scout/src/features/programmes/domain/filter_state.dart";
 import "package:de_scout/src/features/programmes/domain/programme_status.dart";
 import "package:de_scout/src/features/programmes/domain/programme_type.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
 part "filter_provider.g.dart";
+
+const _verifiedOnlyKey = "verified_only";
 
 @riverpod
 class Filter extends _$Filter {
   @override
-  FilterState build() => const FilterState();
+  FilterState build() {
+    Future.microtask(_loadVerifiedOnlyFromPrefs);
+    return const FilterState();
+  }
+
+  Future<void> _loadVerifiedOnlyFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final verifiedOnly = prefs.getBool(_verifiedOnlyKey) ?? false;
+    if (verifiedOnly != state.verifiedOnly) {
+      state = state.copyWith(verifiedOnly: verifiedOnly);
+    }
+  }
 
   void setType(ProgrammeType? type) {
     state = state.copyWith(type: type, clearType: type == null);
@@ -39,6 +53,13 @@ class Filter extends _$Filter {
 
   void setSearchQuery(String query) {
     state = state.copyWith(searchQuery: query.trim());
+  }
+
+  Future<void> toggleVerifiedOnly() async {
+    final next = !state.verifiedOnly;
+    state = state.copyWith(verifiedOnly: next);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_verifiedOnlyKey, next);
   }
 
   void clearTag() {

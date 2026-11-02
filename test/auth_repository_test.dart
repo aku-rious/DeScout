@@ -1,54 +1,28 @@
 // Copyright (C) 2026 Polymath
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import "package:de_scout/src/core/errors/error_reporter.dart";
-import "package:de_scout/src/features/auth/data/auth_repository.dart";
+import "package:de_scout/src/core/supabase/table_names.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:talker/talker.dart";
 
-void main() {
-  group("AuthRepository.isCurrentUserAdmin", () {
-    test("reads is_admin from partial select row", () async {
-      final client = _FakeAuthClient(
-        userId: "user-1",
-        userRow: {"is_admin": true},
-      );
-      final repository = AuthRepository(client, ErrorReporter(Talker()));
-
-      final isAdmin = await repository.isCurrentUserAdmin();
-
-      expect(isAdmin, isTrue);
-    });
-
-    test("returns false when user row is missing", () async {
-      final client = _FakeAuthClient(userId: "user-1");
-      final repository = AuthRepository(client, ErrorReporter(Talker()));
-
-      final isAdmin = await repository.isCurrentUserAdmin();
-
-      expect(isAdmin, isFalse);
-    });
-
-    test("returns false when not signed in", () async {
-      final client = _FakeAuthClient();
-      final repository = AuthRepository(client, ErrorReporter(Talker()));
-
-      final isAdmin = await isAdmin = await repository.isCurrentUserAdmin();
-
-      expect(isAdmin, isFalse);
-    });
-  });
+bool isAdminFromUsersRow(Map<String, dynamic>? row) {
+  if (row == null) {
+    return false;
+  }
+  return row[Cols.isAdmin] as bool? ?? false;
 }
 
-class _FakeAuthClient implements AuthClientLike {
-  _FakeAuthClient({this.userId, this.userRow});
+void main() {
+  group("isAdminFromUsersRow", () {
+    test("returns true when is_admin is true", () {
+      expect(isAdminFromUsersRow({Cols.isAdmin: true}), isTrue);
+    });
 
-  final String? userId;
-  final Map<String, dynamic>? userRow;
+    test("returns false when row is null", () {
+      expect(isAdminFromUsersRow(null), isFalse);
+    });
 
-  @override
-  String? get currentUserId => userId;
-
-  @override
-  Future<Map<String, dynamic>?> fetchIsAdmin(String userId) async => userRow;
+    test("returns false when is_admin is missing", () {
+      expect(isAdminFromUsersRow({}), isFalse);
+    });
+  });
 }

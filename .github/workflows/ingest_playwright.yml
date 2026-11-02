@@ -23,6 +23,10 @@ jobs:
         run: npx playwright install chromium --with-deps
         working-directory: scripts
 
+      - name: Run script unit tests
+        run: npm test
+        working-directory: scripts
+
       - name: Verify repository secrets
         run: |
           if [ -z "${{ secrets.SUPABASE_URL }}" ]; then
@@ -40,9 +44,22 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         working-directory: scripts
         run: |
-          node ingest/lfx_scrape.mjs
-          node ingest/dorahacks_scrape.mjs
-          node ingest/gsoc_scrape.mjs
-          node ingest/outreachy_scrape.mjs
-          node ingest/hyperledger_scrape.mjs
-          node ingest/lfn_scrape.mjs
+          set +e
+          failed=0
+          run_scrape() {
+            echo "=== $1 ==="
+            if node "$1"; then
+              echo "OK $1"
+            else
+              echo "::warning::$1 failed"
+              failed=1
+            fi
+          }
+          run_scrape ingest/lfx_scrape.mjs
+          run_scrape ingest/dorahacks_scrape.mjs
+          run_scrape ingest/gsoc_scrape.mjs
+          run_scrape ingest/outreachy_scrape.mjs
+          run_scrape ingest/hyperledger_scrape.mjs
+          run_scrape ingest/lfn_scrape.mjs
+          run_scrape ingest/wemakedevs_scrape.mjs
+          exit $failed

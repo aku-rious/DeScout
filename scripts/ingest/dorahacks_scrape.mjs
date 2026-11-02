@@ -60,7 +60,6 @@ try {
         `${entry.name ?? ""} ${entry.description ?? ""}`,
       ),
       source: "dorahacks_api",
-      reviewed: false,
     });
   }
 

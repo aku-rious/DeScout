@@ -3,7 +3,9 @@
 
 import "package:de_scout/src/core/supabase/database_types.dart";
 import "package:de_scout/src/core/supabase/table_names.dart";
+import "package:de_scout/src/features/programmes/data/programme_query_filters.dart";
 import "package:de_scout/src/features/programmes/domain/filter_state.dart";
+import "package:de_scout/src/features/programmes/domain/moderation_status.dart";
 import "package:de_scout/src/features/programmes/domain/programme_status.dart";
 import "package:de_scout/src/features/programmes/domain/tag.dart";
 import "package:supabase_flutter/supabase_flutter.dart";
@@ -19,11 +21,12 @@ class ProgrammesRemoteDataSource {
   ) async {
     final hasTagFilter = filters.tagSlug != null && filters.tagSlug!.isNotEmpty;
 
-    var query = _client
-        .from(Tables.programmes)
-        .select(hasTagFilter ? "*, programme_tags!inner(tags!inner(slug))" : "*")
-        .eq(Cols.reviewed, true)
-        .neq(Cols.status, ProgrammeStatus.closed.name);
+    var query = applyModerationFilter(
+      _client
+          .from(Tables.programmes)
+          .select(hasTagFilter ? "*, programme_tags!inner(tags!inner(slug))" : "*"),
+      filters,
+    ).neq(Cols.status, ProgrammeStatus.closed.name);
 
     if (hasTagFilter) {
       query = query.eq("programme_tags.tags.slug", filters.tagSlug!);
@@ -59,7 +62,7 @@ class ProgrammesRemoteDataSource {
         .from(Tables.programmes)
         .select()
         .eq(Cols.id, id)
-        .eq(Cols.reviewed, true)
+        .neq(Cols.moderationStatus, ModerationStatus.rejected.dbValue)
         .maybeSingle();
     if (response == null) {
       return null;
@@ -114,7 +117,7 @@ class ProgrammesRemoteDataSource {
         .from(Tables.programmes)
         .select()
         .inFilter(Cols.id, programmeIds)
-        .eq(Cols.reviewed, true)
+        .neq(Cols.moderationStatus, ModerationStatus.rejected.dbValue)
         .neq(Cols.status, ProgrammeStatus.closed.name)
         .order(Cols.closesAt, ascending: true)
         .limit(5);

@@ -61,7 +61,8 @@ class ProgrammesRow {
     this.closesAt,
     required this.status,
     required this.source,
-    required this.reviewed,
+    required this.moderationStatus,
+    this.rejectedAt,
     required this.isAdminSubmitted,
     this.contributorId,
     required this.createdAt,
@@ -87,7 +88,10 @@ class ProgrammesRow {
           : DateTime.parse(json["closes_at"] as String),
       status: ProgrammeStatusDb.fromJson(json["status"] as String),
       source: json["source"] as String,
-      reviewed: json["reviewed"] as bool,
+      moderationStatus: json["moderation_status"] as String,
+      rejectedAt: json["rejected_at"] == null
+          ? null
+          : DateTime.parse(json["rejected_at"] as String),
       isAdminSubmitted: json["is_admin_submitted"] as bool,
       contributorId: json["contributor_id"] as String?,
       createdAt: DateTime.parse(json["created_at"] as String),
@@ -108,7 +112,8 @@ class ProgrammesRow {
   final DateTime? closesAt;
   final ProgrammeStatusDb status;
   final String source;
-  final bool reviewed;
+  final String moderationStatus;
+  final DateTime? rejectedAt;
   final bool isAdminSubmitted;
   final String? contributorId;
   final DateTime createdAt;

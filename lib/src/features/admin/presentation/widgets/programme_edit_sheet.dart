@@ -4,10 +4,12 @@
 import "package:de_scout/src/core/supabase/table_names.dart";
 import "package:de_scout/src/features/programmes/domain/programme.dart";
 import "package:de_scout/src/features/programmes/domain/programme_type.dart";
+import "package:de_scout/src/features/programmes/presentation/providers/tags_provider.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 
-/// Bottom sheet form for editing a programme before approval.
-class ProgrammeEditSheet extends StatefulWidget {
+/// Bottom sheet form for editing a programme before verification.
+class ProgrammeEditSheet extends ConsumerStatefulWidget {
   const ProgrammeEditSheet({
     required this.programme,
     required this.onSubmit,
@@ -15,12 +17,18 @@ class ProgrammeEditSheet extends StatefulWidget {
   });
 
   final Programme programme;
-  final Future<void> Function(Map<String, dynamic> fields) onSubmit;
+  final Future<void> Function(
+    Map<String, dynamic> fields,
+    List<String> tagSlugs,
+  ) onSubmit;
 
   static Future<void> show({
     required BuildContext context,
     required Programme programme,
-    required Future<void> Function(Map<String, dynamic> fields) onSubmit,
+    required Future<void> Function(
+      Map<String, dynamic> fields,
+      List<String> tagSlugs,
+    ) onSubmit,
   }) {
     return showModalBottomSheet<void>(
       context: context,
@@ -32,10 +40,10 @@ class ProgrammeEditSheet extends StatefulWidget {
   }
 
   @override
-  State<ProgrammeEditSheet> createState() => _ProgrammeEditSheetState();
+  ConsumerState<ProgrammeEditSheet> createState() => _ProgrammeEditSheetState();
 }
 
-class _ProgrammeEditSheetState extends State<ProgrammeEditSheet> {
+class _ProgrammeEditSheetState extends ConsumerState<ProgrammeEditSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _urlController;
@@ -46,6 +54,7 @@ class _ProgrammeEditSheetState extends State<ProgrammeEditSheet> {
   DateTime? _opensAt;
   DateTime? _closesAt;
   var _submitting = false;
+  final _selectedTagSlugs = <String>{};
 
   @override
   void initState() {
@@ -108,7 +117,7 @@ class _ProgrammeEditSheetState extends State<ProgrammeEditSheet> {
         Cols.closesAt: _closesAt?.toUtc().toIso8601String(),
         Cols.stipendUsd: stipendText.isEmpty ? null : double.parse(stipendText),
       };
-      await widget.onSubmit(fields);
+      await widget.onSubmit(fields, _selectedTagSlugs.toList());
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -122,6 +131,7 @@ class _ProgrammeEditSheetState extends State<ProgrammeEditSheet> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final tagsAsync = ref.watch(allTagsProvider);
 
     return Padding(
       padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomInset),
@@ -247,6 +257,33 @@ class _ProgrammeEditSheetState extends State<ProgrammeEditSheet> {
                   onPressed: () => _pickDate(isOpensAt: false),
                 ),
               ),
+              const SizedBox(height: 12),
+              Text("Tags", style: Theme.of(context).textTheme.labelMedium),
+              const SizedBox(height: 8),
+              tagsAsync.when(
+                data: (tags) => Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final tag in tags)
+                      FilterChip(
+                        label: Text(tag.name),
+                        selected: _selectedTagSlugs.contains(tag.slug),
+                        onSelected: (selected) {
+                          setState(() {
+                            if (selected) {
+                              _selectedTagSlugs.add(tag.slug);
+                            } else {
+                              _selectedTagSlugs.remove(tag.slug);
+                            }
+                          });
+                        },
+                      ),
+                  ],
+                ),
+                loading: () => const LinearProgressIndicator(),
+                error: (_, _) => const Text("Could not load tags"),
+              ),
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: _submitting ? null : _submit,
@@ -256,7 +293,7 @@ class _ProgrammeEditSheetState extends State<ProgrammeEditSheet> {
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text("Save and approve"),
+                    : const Text("Save and verify"),
               ),
             ],
           ),

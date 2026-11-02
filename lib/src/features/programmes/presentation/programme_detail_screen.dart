@@ -15,6 +15,7 @@ import "package:de_scout/src/features/programmes/presentation/providers/programm
 import "package:de_scout/src/features/programmes/presentation/providers/programmes_provider.dart";
 import "package:de_scout/src/features/programmes/presentation/similar_programmes_row.dart";
 import "package:de_scout/src/features/programmes/presentation/stipend_card.dart";
+import "package:de_scout/src/features/programmes/presentation/trust_badge.dart";
 import "package:de_scout/src/features/saved/domain/application_status.dart";
 import "package:de_scout/src/features/saved/presentation/providers/saved_provider.dart";
 import "package:de_scout/src/features/saved/presentation/widgets/bookmark_button.dart";
@@ -66,6 +67,8 @@ class ProgrammeDetailScreen extends ConsumerWidget {
                       closesAt: programme.closesAt,
                       nullLabel: "Deadline TBA",
                     ),
+                    const SizedBox(height: 8),
+                    TrustBadge(programme: programme),
                     const SizedBox(height: 16),
                     if (programme.description != null)
                       Text(programme.description!, style: textTheme.bodyLarge),

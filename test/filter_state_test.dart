@@ -21,4 +21,9 @@ void main() {
     const filters = FilterState(searchQuery: "gsoc");
     expect(filters.hasActiveFilters, isTrue);
   });
+
+  test("verifiedOnly counts as active filter", () {
+    const filters = FilterState(verifiedOnly: true);
+    expect(filters.hasActiveFilters, isTrue);
+  });
 }

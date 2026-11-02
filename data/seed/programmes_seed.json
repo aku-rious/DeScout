@@ -11,7 +11,7 @@
     "closes_at": "2026-12-31T23:59:59Z",
     "status": "open",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "FOSSASIA Internship Program",
@@ -25,7 +25,7 @@
     "closes_at": null,
     "status": "open",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "FOSSEE GIS Internship",
@@ -39,7 +39,7 @@
     "closes_at": "2026-02-20T23:59:59Z",
     "status": "closed",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "Google Season of Docs",
@@ -53,7 +53,7 @@
     "closes_at": "2026-04-15T23:59:59Z",
     "status": "closed",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "Google Summer of Code",
@@ -67,7 +67,7 @@
     "closes_at": "2026-03-31T18:00:00Z",
     "status": "closed",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "Hyperledger Mentorship Program",
@@ -81,7 +81,7 @@
     "closes_at": "2026-05-11T12:00:00Z",
     "status": "closed",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "KAUST VSRP Internships",
@@ -95,7 +95,7 @@
     "closes_at": null,
     "status": "open",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "KDE Season of KDE",
@@ -109,7 +109,7 @@
     "closes_at": "2026-02-28T23:59:59Z",
     "status": "closed",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "LFN Mentorship Program",
@@ -123,7 +123,7 @@
     "closes_at": "2026-03-22T23:59:59Z",
     "status": "closed",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "Linux Kernel Mentorship Program",
@@ -137,7 +137,7 @@
     "closes_at": "2026-05-01T23:59:59Z",
     "status": "closed",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "Millennium Fellowship",
@@ -151,7 +151,7 @@
     "closes_at": "2026-08-31T23:59:59Z",
     "status": "open",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "MLH Open Source Fellowship",
@@ -165,7 +165,7 @@
     "closes_at": "2026-08-31T23:59:59Z",
     "status": "open",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "Open Mainframe Project Mentorship Program",
@@ -179,7 +179,7 @@
     "closes_at": "2026-05-15T23:59:59Z",
     "status": "closed",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "Open Source Promotion Plan (OSPP)",
@@ -193,7 +193,7 @@
     "closes_at": null,
     "status": "unknown",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "SLoP by DA-IICT",
@@ -207,7 +207,7 @@
     "closes_at": "2026-10-08T23:59:59Z",
     "status": "upcoming",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "Taproot Foundation",
@@ -221,7 +221,7 @@
     "closes_at": null,
     "status": "unknown",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "The Processing Foundation Fellowships",
@@ -235,7 +235,7 @@
     "closes_at": null,
     "status": "unknown",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "The Thiel Fellowship",
@@ -249,7 +249,7 @@
     "closes_at": null,
     "status": "open",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   },
   {
     "name": "X.Org EVoC",
@@ -263,6 +263,6 @@
     "closes_at": null,
     "status": "open",
     "source": "manual",
-    "reviewed": true
+    "moderation_status": "admin_verified"
   }
 ]

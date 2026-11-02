@@ -7,24 +7,28 @@ import "package:de_scout/src/core/errors/error_reporter.dart";
 import "package:de_scout/src/core/supabase/database_types.dart";
 import "package:de_scout/src/core/supabase/supabase_client.dart";
 import "package:de_scout/src/features/admin/data/admin_functions_client.dart";
+import "package:de_scout/src/features/admin/domain/curation_queue_status.dart";
 import "package:de_scout/src/features/programmes/domain/programme.dart";
 import "package:riverpod_annotation/riverpod_annotation.dart";
 import "package:supabase_flutter/supabase_flutter.dart";
 
 part "admin_repository.g.dart";
 
-/// Admin review-queue data access via Edge Functions.
+/// Admin curation data access via Edge Functions.
 class AdminRepository {
   const AdminRepository(this._functions, this._errors);
 
   final AdminFunctionsClientLike _functions;
   final ErrorReporter _errors;
 
-  Future<List<Programme>> fetchUnreviewedProgrammes() {
+  Future<List<Programme>> fetchProgrammesForCuration(
+    CurationQueueStatus status,
+  ) {
     return _errors.guard(
       userMessage: ErrorMapper.adminMessage,
       action: () async {
-        final response = await _functions.invokeFetchUnreviewed();
+        final response =
+            await _functions.invokeFetchCurationQueue(status.apiValue);
         _ensureSuccess(response);
         final data = response.data;
         if (data is! List) {
@@ -38,12 +42,20 @@ class AdminRepository {
     );
   }
 
-  Future<void> approveProgramme(String id) {
-    return _updateProgramme(id: id, action: "approve");
+  Future<void> verifyProgramme(String id, {List<String>? tagSlugs}) {
+    return _updateProgramme(
+      id: id,
+      action: "verify",
+      tagSlugs: tagSlugs,
+    );
   }
 
   Future<void> rejectProgramme(String id) {
     return _updateProgramme(id: id, action: "reject");
+  }
+
+  Future<void> restoreProgramme(String id) {
+    return _updateProgramme(id: id, action: "restore");
   }
 
   Future<void> updateProgrammeField(String id, Map<String, dynamic> fields) {
@@ -66,6 +78,7 @@ class AdminRepository {
     required String id,
     required String action,
     Map<String, dynamic>? fields,
+    List<String>? tagSlugs,
   }) {
     return _errors.guard(
       userMessage: ErrorMapper.adminMessage,
@@ -73,6 +86,9 @@ class AdminRepository {
         final body = <String, dynamic>{"id": id, "action": action};
         if (fields != null && fields.isNotEmpty) {
           body["fields"] = fields;
+        }
+        if (tagSlugs != null && tagSlugs.isNotEmpty) {
+          body["tag_slugs"] = tagSlugs;
         }
         final response = await _functions.invokeUpdateProgramme(body);
         _ensureSuccess(response);
